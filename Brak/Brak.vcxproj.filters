@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Include\Core">
+      <UniqueIdentifier>{538b508a-a764-4304-b0be-6b0849a3e00a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Engine">
+      <UniqueIdentifier>{16dc64e7-66d5-40c0-9e35-ce20d94ce0dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{b7d832ef-b986-4647-b83c-085c2c29805f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Engine">
+      <UniqueIdentifier>{8c0e92c3-dfe9-45c4-a72e-1889d9f897a0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Include\Brak.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Forward.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Camera.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Engine.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\GameHandler.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\InputManager.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Key.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Mesh.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MeshInstance.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Resource.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\ResourceManager.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Scene.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\SceneNode.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Texture.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Core.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Window.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Engine.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\InputManager.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ResourceManager.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneNode.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Window.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
