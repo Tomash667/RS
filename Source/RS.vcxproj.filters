@@ -39,6 +39,9 @@
     <ClInclude Include="AIController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UnitEntity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Item.cpp">
@@ -52,9 +55,6 @@
     </ClCompile>
     <ClCompile Include="Unit.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UnitEntity.h">
-      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Pch.cpp">
       <Filter>Source Files</Filter>
