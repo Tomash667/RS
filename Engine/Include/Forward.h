@@ -4,6 +4,7 @@ struct Camera;
 struct Engine;
 struct GameHandler;
 struct InputManager;
+struct Render;
 struct Resource;
 struct ResourceManager;
 struct Mesh;

@@ -170,6 +170,7 @@
     <ClInclude Include="Include\Timer.h" />
     <ClInclude Include="Include\Window.h" />
     <ClInclude Include="Include\WindowHandler.h" />
+    <ClInclude Include="Source\Render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CoreMath.cpp" />
@@ -181,6 +182,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Render.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneNode.cpp" />

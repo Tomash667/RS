@@ -21,9 +21,9 @@ private:
 	GameHandler* handler;
 	InputManager* input;
 	Window* window;
+	Render* render;
 	ResourceManager* res_mgr;
 	Scene* scene;
-	uint frames;
-	float frame_time, fps;
+	float fps;
 	bool shutdown;
 };

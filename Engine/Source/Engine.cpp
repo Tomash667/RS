@@ -3,15 +3,18 @@
 #include "GameHandler.h"
 #include "InputManager.h"
 #include "Window.h"
+#include "Render.h"
 #include "Timer.h"
 
-Engine::Engine(GameHandler* handler) : handler(handler), window(nullptr), shutdown(false)
+Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), scene(nullptr), shutdown(false), fps(0)
 {
 	assert(handler);
 }
 
 Engine::~Engine()
 {
+	delete scene;
+	delete render;
 	delete window;
 	delete input;
 }
@@ -46,12 +49,20 @@ void Engine::Init()
 	window = new Window(this, input);
 	window->Init();
 
+	render = new Render;
+	render->Init();
+
+	scene = new Scene;
+
 	handler->OnInit();
 }
 
 void Engine::Loop()
 {
 	Timer timer;
+	uint frames = 0;
+	float frame_time = 0.f;
+
 	while(window->Tick())
 	{
 		float dt = timer.Tick();
@@ -71,7 +82,7 @@ void Engine::Loop()
 		if(shutdown)
 			return;
 
-		//scene->Draw();
+		scene->Draw();
 		input->Update();
 	}
 }

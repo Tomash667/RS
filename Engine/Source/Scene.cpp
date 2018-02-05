@@ -12,7 +12,11 @@ Scene::~Scene()
 
 void Scene::Add(SceneNode* node)
 {
-	// TODO
 	assert(node);
-	assert(0);
+	nodes.push_back(node);
+}
+
+void Scene::Draw()
+{
+
 }

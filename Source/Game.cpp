@@ -32,7 +32,7 @@ void Game::OnInit()
 	ResourceManager* res_mgr = engine->GetResourceManager();
 	Scene* scene = engine->GetScene();
 
-	/*Mesh* mesh = res_mgr->GetMesh("human.qmsh");
+	Mesh* mesh = res_mgr->GetMesh("human.qmsh");
 
 	player = new SceneNode;
 	player->SetMeshInstance(mesh);
@@ -42,7 +42,7 @@ void Game::OnInit()
 
 	Camera* cam = scene->GetCamera();
 	cam->from = Vec3(-5, 5, -5);
-	cam->to = Vec3(0, 1, 0);*/
+	cam->to = Vec3(0, 1, 0);
 }
 
 //void Game::LoadResources()
@@ -91,8 +91,6 @@ void Game::OnUpdate(float dt)
 	//if(state != GS_GAME)
 	//	return;
 
-	//if(engine->GetInput()->Down(Key::W))
-	//	player->pos.z += 5.f * dt;
 
 	InputManager* input = engine->GetInput();
 	if(input->Down(Key::Alt) && input->Pressed(Key::F4))
@@ -100,4 +98,7 @@ void Game::OnUpdate(float dt)
 		engine->Shutdown();
 		return;
 	}
+
+	if(input->Down(Key::W))
+		player->pos.z += 5.f * dt;
 }
