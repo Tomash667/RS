@@ -5,8 +5,12 @@
 #define NOMINMAX
 #define STRICT
 
-#include <Windows.h>
+#include <dxgi.h>
+#include <d3dcommon.h>
+#include <d3d11_1.h>
+#include <d3dcompiler.h>
 #include <cassert>
+#include <Windows.h>
 #include "Brak.h"
 
 #undef RegisterClass

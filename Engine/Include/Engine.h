@@ -8,6 +8,7 @@ struct Engine : WindowHandler
 	~Engine();
 	int Run();
 	void Shutdown();
+	void ShowError(cstring msg);
 
 	InputManager* GetInput() { return input; }
 	ResourceManager* GetResourceManager() { return res_mgr; }

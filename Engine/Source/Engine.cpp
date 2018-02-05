@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Window.h"
 #include "Render.h"
+#include "Scene.h"
 #include "Timer.h"
 
 Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), scene(nullptr), shutdown(false), fps(0)
@@ -27,6 +28,7 @@ int Engine::Run()
 	}
 	catch(cstring err)
 	{
+		ShowError(Format("Failed to initialize game: %s", err));
 		return 1;
 	}
 
@@ -36,6 +38,7 @@ int Engine::Run()
 	}
 	catch(cstring err)
 	{
+		ShowError(Format("Fatal game error: %s", err));
 		return 2;
 	}
 
@@ -49,10 +52,10 @@ void Engine::Init()
 	window = new Window(this, input);
 	window->Init();
 
-	render = new Render;
+	render = new Render(window);
 	render->Init();
 
-	scene = new Scene;
+	scene = new Scene(render);
 
 	handler->OnInit();
 }
@@ -90,4 +93,10 @@ void Engine::Loop()
 void Engine::Shutdown()
 {
 	shutdown = true;
+}
+
+void Engine::ShowError(cstring msg)
+{
+	assert(msg);
+	// TODO
 }

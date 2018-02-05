@@ -32,13 +32,13 @@ void Game::OnInit()
 	ResourceManager* res_mgr = engine->GetResourceManager();
 	Scene* scene = engine->GetScene();
 
-	Mesh* mesh = res_mgr->GetMesh("human.qmsh");
+	/*Mesh* mesh = res_mgr->GetMesh("human.qmsh");
 
 	player = new SceneNode;
 	player->SetMeshInstance(mesh);
 	player->pos = Vec3(0, 0, 0);
 	player->rot = 0;
-	scene->Add(player);
+	scene->Add(player);*/
 
 	Camera* cam = scene->GetCamera();
 	cam->from = Vec3(-5, 5, -5);

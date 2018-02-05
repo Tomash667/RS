@@ -86,7 +86,10 @@
     <ClInclude Include="Include\Timer.h">
       <Filter>Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Render.h">
+    <ClInclude Include="Include\Render.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\WICTextureLoader.h">
       <Filter>Source\Engine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -122,6 +125,9 @@
       <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Render.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\WICTextureLoader.cpp">
       <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>

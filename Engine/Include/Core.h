@@ -94,7 +94,7 @@ namespace internal
 		}
 	};
 
-	template<typename T>
+	/*template<typename T>
 	struct ComAllocator : IAllocator<T>
 	{
 		T* Create() override
@@ -107,7 +107,7 @@ namespace internal
 			if(item)
 				item->Release();
 		}
-	};
+	};*/
 }
 
 //-----------------------------------------------------------------------------
@@ -168,8 +168,8 @@ private:
 	Allocator allocator;
 };
 
-template<typename T>
-using ComPtr = Ptr<T, internal::ComAllocator<T>>;
+//template<typename T>
+//using ComPtr = Ptr<T, internal::ComAllocator<T>>;
 
 //-----------------------------------------------------------------------------
 #include "CoreMath.h"
