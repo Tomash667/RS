@@ -1,5 +1,6 @@
 #pragma once
 
+// external
 struct Camera;
 struct Engine;
 struct GameHandler;
@@ -14,6 +15,9 @@ struct Texture;
 struct Window;
 struct WindowHandler;
 
+// internal
+struct QmshLoader;
+
 // directx
 struct IDXGISwapChain;
 struct ID3D11Device;
@@ -23,3 +27,4 @@ struct ID3D11DepthStencilView;
 struct ID3D10Blob;
 typedef ID3D10Blob ID3DBlob;
 struct ID3D11RasterizerState;
+struct ID3D11ShaderResourceView;

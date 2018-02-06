@@ -151,9 +151,11 @@
   <ItemGroup>
     <ClInclude Include="Include\Brak.h" />
     <ClInclude Include="Include\Camera.h" />
+    <ClInclude Include="Include\Containers.h" />
     <ClInclude Include="Include\Core.h" />
     <ClInclude Include="Include\CoreMath.h" />
     <ClInclude Include="Include\Engine.h" />
+    <ClInclude Include="Include\File.h" />
     <ClInclude Include="Include\Forward.h" />
     <ClInclude Include="Include\GameHandler.h" />
     <ClInclude Include="Include\InputManager.h" />
@@ -172,18 +174,23 @@
     <ClInclude Include="Include\WICTextureLoader.h" />
     <ClInclude Include="Include\Window.h" />
     <ClInclude Include="Include\WindowHandler.h" />
+    <ClInclude Include="Source\QmshLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\WICTextureLoader.cpp" />
     <ClCompile Include="Source\CoreMath.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
+    <ClCompile Include="Source\File.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\MeshInstance.cpp" />
     <ClCompile Include="Source\Pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\QmshLoader.cpp" />
     <ClCompile Include="Source\Render.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Scene.cpp" />

@@ -2,7 +2,14 @@
 
 struct Resource
 {
-	string name;
+	enum Type
+	{
+		Texture,
+		Mesh
+	};
 
-	virtual bool Load() = 0;
+	virtual ~Resource() {}
+
+	string name;
+	Type type;
 };

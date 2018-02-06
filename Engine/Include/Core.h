@@ -170,8 +170,3 @@ private:
 
 //template<typename T>
 //using ComPtr = Ptr<T, internal::ComAllocator<T>>;
-
-//-----------------------------------------------------------------------------
-#include "CoreMath.h"
-//#include "File.h"
-#include "Text.h"

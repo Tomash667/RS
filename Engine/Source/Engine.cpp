@@ -4,10 +4,12 @@
 #include "InputManager.h"
 #include "Window.h"
 #include "Render.h"
+#include "ResourceManager.h"
 #include "Scene.h"
 #include "Timer.h"
 
-Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), scene(nullptr), shutdown(false), fps(0)
+Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), res_mgr(nullptr), scene(nullptr), shutdown(false),
+fps(0)
 {
 	assert(handler);
 }
@@ -15,6 +17,7 @@ Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(
 Engine::~Engine()
 {
 	delete scene;
+	delete res_mgr;
 	delete render;
 	delete window;
 	delete input;
@@ -54,6 +57,8 @@ void Engine::Init()
 
 	render = new Render(window);
 	render->Init();
+
+	res_mgr = new ResourceManager(render);
 
 	scene = new Scene(render);
 

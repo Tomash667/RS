@@ -6,7 +6,8 @@
 Window::Window(WindowHandler* handler, InputManager* input) : handler(handler), hwnd(nullptr), size(1024, 768), title("Window"), input(input), active(false),
 activation_point(-1, -1), fullscreen(false), replace_cursor(false), locked_cursor(true), cursor_visible(true)
 {
-	assert(input && handler);
+	assert(input);
+	assert(handler);
 }
 
 void Window::Init()

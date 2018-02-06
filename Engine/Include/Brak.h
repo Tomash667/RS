@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <vector>
 #include <string>
+#include <set>
 #include <DirectXMath.h>
 
 using std::vector;
@@ -25,4 +26,8 @@ using std::min;
 using std::max;
 
 #include "Core.h"
+#include "CoreMath.h"
+#include "Containers.h"
+#include "Text.h"
+#include "File.h"
 #include "Forward.h"

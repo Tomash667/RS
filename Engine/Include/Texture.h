@@ -4,5 +4,7 @@
 
 struct Texture final : Resource
 {
-	void Load() override;
+	~Texture();
+
+	ID3D11ShaderResourceView* tex;
 };

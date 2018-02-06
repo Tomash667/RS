@@ -92,6 +92,15 @@
     <ClInclude Include="Include\WICTextureLoader.h">
       <Filter>Source\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Containers.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\QmshLoader.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\File.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -129,6 +138,18 @@
     </ClCompile>
     <ClCompile Include="Include\WICTextureLoader.cpp">
       <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MeshInstance.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\QmshLoader.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\File.cpp">
+      <Filter>Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
