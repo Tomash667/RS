@@ -2,6 +2,11 @@
 #include "SceneNode.h"
 #include "MeshInstance.h"
 
+SceneNode::~SceneNode()
+{
+	delete inst;
+}
+
 void SceneNode::SetMeshInstance(Mesh* mesh)
 {
 	assert(mesh);

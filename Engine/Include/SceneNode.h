@@ -10,5 +10,7 @@ struct SceneNode
 	Vec3 pos;
 	float rot;
 
+	SceneNode() : mesh(nullptr), inst(nullptr), rot(0.f) {}
+	~SceneNode();
 	void SetMeshInstance(Mesh* mesh);
 };

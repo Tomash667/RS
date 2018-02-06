@@ -2,5 +2,8 @@
 
 struct Camera
 {
-	Vec3 from, to;
+	Vec3 from, to, up;
+
+	Camera();
+	Matrix GetViewMatrix();
 };

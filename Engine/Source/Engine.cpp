@@ -23,17 +23,28 @@ Engine::~Engine()
 	delete input;
 }
 
-int Engine::Run()
+int Engine::Run(StartupOptions* options)
 {
+	bool own_options = false;
+	if(!options)
+	{
+		options = new StartupOptions;
+		own_options = true;
+	}
+
 	try
 	{
-		Init();
+		Init(*options);
 	}
 	catch(cstring err)
 	{
+		if(own_options)
+			delete options;
 		ShowError(Format("Failed to initialize game: %s", err));
 		return 1;
 	}
+	if(own_options)
+		delete options;
 
 	try
 	{
@@ -48,11 +59,12 @@ int Engine::Run()
 	return 0;
 }
 
-void Engine::Init()
+void Engine::Init(StartupOptions& options)
 {
 	input = new InputManager;
 
 	window = new Window(this, input);
+	window->SetTitle(options.title);
 	window->Init();
 
 	render = new Render(window);
@@ -61,6 +73,7 @@ void Engine::Init()
 	res_mgr = new ResourceManager(render);
 
 	scene = new Scene(render);
+	scene->Init();
 
 	handler->OnInit();
 }
@@ -103,5 +116,6 @@ void Engine::Shutdown()
 void Engine::ShowError(cstring msg)
 {
 	assert(msg);
-	// TODO
+	HWND hwnd = window ? (HWND)window->GetHandle() : nullptr;
+	MessageBox(hwnd, msg, nullptr, MB_OK | MB_ICONERROR);
 }

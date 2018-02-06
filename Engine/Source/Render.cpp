@@ -225,7 +225,7 @@ ID3DBlob* Render::CompileShader(cstring filename, cstring function, bool vertex)
 	flags |= D3DCOMPILE_DEBUG;
 #endif
 
-	cstring path = Format("../shaders/%s", filename);
+	cstring path = Format("Shaders/%s", filename);
 	ID3DBlob* shaderBlob = nullptr;
 	ID3DBlob* errorBlob = nullptr;
 	wchar_t path_w[MAX_PATH];

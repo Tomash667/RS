@@ -1,12 +1,13 @@
 #pragma once
 
+#include "StartupOptions.h"
 #include "WindowHandler.h"
 
 struct Engine : WindowHandler
 {
 	Engine(GameHandler* handler);
 	~Engine();
-	int Run();
+	int Run(StartupOptions* options = nullptr);
 	void Shutdown();
 	void ShowError(cstring msg);
 
@@ -16,7 +17,7 @@ struct Engine : WindowHandler
 	Window* GetWindow() { return window; }
 
 private:
-	void Init();
+	void Init(StartupOptions& options);
 	void Loop();
 
 	GameHandler* handler;

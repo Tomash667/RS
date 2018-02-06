@@ -16,6 +16,7 @@ struct Window;
 struct WindowHandler;
 
 // internal
+struct MeshShader;
 struct QmshLoader;
 
 // directx

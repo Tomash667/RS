@@ -9,7 +9,7 @@
 #include <Scene.h>
 #include <Camera.h>
 #include <Window.h>
-#include "InputManager.h"
+#include <InputManager.h>
 
 Game::Game() : engine(nullptr)
 {}
@@ -22,7 +22,9 @@ Game::~Game()
 int Game::Run()
 {
 	engine = new Engine(this);
-	return engine->Run();
+	StartupOptions options;
+	options.title = "RS v0";
+	return engine->Run(&options);
 }
 
 void Game::OnInit()
