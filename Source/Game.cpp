@@ -8,6 +8,7 @@
 #include <SceneNode.h>
 #include <Scene.h>
 #include <Camera.h>
+#include <Window.h>
 #include "InputManager.h"
 
 Game::Game() : engine(nullptr)
@@ -98,6 +99,9 @@ void Game::OnUpdate(float dt)
 		engine->Shutdown();
 		return;
 	}
+
+	if(input->Down(Key::Alt) && input->Pressed(Key::U))
+		engine->GetWindow()->UnlockCursor(true);
 
 	if(input->Down(Key::W))
 		player->pos.z += 5.f * dt;
