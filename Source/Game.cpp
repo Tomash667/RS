@@ -52,15 +52,17 @@ void Game::OnInit()
 	player->rot = 0;
 	scene->Add(player);
 
-	Camera* cam = scene->GetCamera();
-	cam->from = Vec3(-5, 5, -5);
-	cam->to = Vec3(0, 1, 0);
+	camera = scene->GetCamera();
+	camera->from = Vec3(-5, 5, -5);
+	camera->to = Vec3(0, 1, 0);
 
 	SceneNode* floor = new SceneNode;
 	floor->mesh = res_mgr->GetMesh("floor.qmsh");
 	floor->pos = Vec3(0, 0, 0);
 	floor->rot = 0;
 	scene->Add(floor);
+
+	cam_rot = 0;
 }
 
 //void Game::LoadResources()
@@ -122,4 +124,17 @@ void Game::OnUpdate(float dt)
 
 	if(input->Down(Key::W))
 		player->pos.z += 5.f * dt;
+
+	// update camera
+	auto& mouse_dif = input->GetMouseMove();
+	player->rot += mouse_dif.x;
+
+	Vec3 target = player->pos;
+	target.y += 1.5f;
+
+	camera->to = target;
+	camera->from = target;
+	camera->from += Vec3(cos(player->rot + PI/2) * 2, 0.25f, sin(player->rot+PI/2) * 2);
+
+
 }

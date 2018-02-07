@@ -30,5 +30,7 @@ struct Game : GameHandler
 	vector<Unit*> units;*/
 
 	Engine* engine;
+	Camera* camera;
 	SceneNode* player;
+	float cam_rot;
 };

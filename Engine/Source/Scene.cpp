@@ -58,8 +58,13 @@ void Scene::Draw()
 		shader->Draw(node->mesh);
 	}
 
-	bool m_vsync_enabled = false;
-	render->GetSwapChain()->Present(m_vsync_enabled ? 1 : 0, 0);
+	bool vsync_enabled;
+#ifdef _DEBUG
+	vsync_enabled = false;
+#else
+	vsync_enabled = true;
+#endif
+	render->GetSwapChain()->Present(vsync_enabled ? 1 : 0, 0);
 }
 
 void Scene::Init()
