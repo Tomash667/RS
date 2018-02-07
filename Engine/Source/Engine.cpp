@@ -12,6 +12,7 @@ Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(
 fps(0)
 {
 	assert(handler);
+	Logger::global = new Logger("log.txt");
 }
 
 Engine::~Engine()
@@ -21,6 +22,7 @@ Engine::~Engine()
 	delete render;
 	delete window;
 	delete input;
+	delete Logger::global;
 }
 
 int Engine::Run(StartupOptions* options)
@@ -61,6 +63,7 @@ int Engine::Run(StartupOptions* options)
 
 void Engine::Init(StartupOptions& options)
 {
+	Info("Init engine.");
 	input = new InputManager;
 
 	window = new Window(this, input);
@@ -75,11 +78,14 @@ void Engine::Init(StartupOptions& options)
 	scene = new Scene(render);
 	scene->Init();
 
+	Info("Init game.");
 	handler->OnInit();
 }
 
 void Engine::Loop()
 {
+	Info("Start game loop.");
+
 	Timer timer;
 	uint frames = 0;
 	float frame_time = 0.f;
@@ -111,11 +117,13 @@ void Engine::Loop()
 void Engine::Shutdown()
 {
 	shutdown = true;
+	Info("Shutting down engine.");
 }
 
 void Engine::ShowError(cstring msg)
 {
 	assert(msg);
+	Error(msg);
 	HWND hwnd = window ? (HWND)window->GetHandle() : nullptr;
 	MessageBox(hwnd, msg, nullptr, MB_OK | MB_ICONERROR);
 }

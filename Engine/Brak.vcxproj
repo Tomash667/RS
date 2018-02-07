@@ -160,6 +160,7 @@
     <ClInclude Include="Include\GameHandler.h" />
     <ClInclude Include="Include\InputManager.h" />
     <ClInclude Include="Include\Key.h" />
+    <ClInclude Include="Include\Logger.h" />
     <ClInclude Include="Include\Mesh.h" />
     <ClInclude Include="Include\MeshInstance.h" />
     <ClInclude Include="Include\Pch.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\File.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />
     <ClCompile Include="Source\MeshInstance.cpp" />
     <ClCompile Include="Source\MeshShader.cpp" />

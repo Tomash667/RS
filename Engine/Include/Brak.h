@@ -18,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <fstream>
 #include <DirectXMath.h>
 
 using std::vector;
@@ -30,4 +31,5 @@ using std::max;
 #include "Containers.h"
 #include "Text.h"
 #include "File.h"
+#include "Logger.h"
 #include "Forward.h"

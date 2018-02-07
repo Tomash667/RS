@@ -107,6 +107,9 @@
     <ClInclude Include="Include\StartupOptions.h">
       <Filter>Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Logger.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -162,6 +165,9 @@
     </ClCompile>
     <ClCompile Include="Source\Camera.cpp">
       <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Logger.cpp">
+      <Filter>Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

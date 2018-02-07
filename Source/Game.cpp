@@ -10,6 +10,8 @@
 #include <Camera.h>
 #include <Window.h>
 #include <InputManager.h>
+#include <ctime>
+
 
 Game::Game() : engine(nullptr)
 {}
@@ -22,6 +24,13 @@ Game::~Game()
 int Game::Run()
 {
 	engine = new Engine(this);
+
+	time_t t = time(0);
+	tm tm;
+	localtime_s(&tm, &t);
+	Info("RS v0");
+	Info("Date: %04d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+
 	StartupOptions options;
 	options.title = "RS v0";
 	return engine->Run(&options);
@@ -46,6 +55,12 @@ void Game::OnInit()
 	Camera* cam = scene->GetCamera();
 	cam->from = Vec3(-5, 5, -5);
 	cam->to = Vec3(0, 1, 0);
+
+	SceneNode* floor = new SceneNode;
+	floor->mesh = res_mgr->GetMesh("floor.qmsh");
+	floor->pos = Vec3(0, 0, 0);
+	floor->rot = 0;
+	scene->Add(floor);
 }
 
 //void Game::LoadResources()
