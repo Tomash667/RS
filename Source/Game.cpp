@@ -61,8 +61,6 @@ void Game::OnInit()
 	floor->pos = Vec3(0, 0, 0);
 	floor->rot = 0;
 	scene->Add(floor);
-
-	cam_rot = 0;
 }
 
 //void Game::LoadResources()
@@ -122,19 +120,76 @@ void Game::OnUpdate(float dt)
 	if(input->Down(Key::Alt) && input->Pressed(Key::U))
 		engine->GetWindow()->UnlockCursor(true);
 
+	int dir = 0;
 	if(input->Down(Key::W))
-		player->pos.z += 5.f * dt;
+		dir += 10;
+	if(input->Down(Key::S))
+		dir -= 10;
+	if(input->Down(Key::D))
+		dir += 1;
+	if(input->Down(Key::A))
+		dir -= 1;
+	if(dir != 0)
+	{
+		float d;
+		switch(dir)
+		{
+		case +1: // right
+			d = 0;
+			break;
+		case -9: // right back
+			d = PI / 4;
+			break;
+		case -10: // back
+			d = PI / 2;
+			break;
+		case -11: // left back
+			d = PI * 3 / 4;
+			break;
+		case -1: // left
+			d = PI;
+			break;
+		case +9: // left forward
+			d = PI * 5 / 4;
+			break;
+		default:
+		case +10: // forward
+			d = PI * 3 / 2;
+			break;
+		case +11: // right forward
+			d = PI * 7 / 4;
+			break;
+		}
+
+		d -= player->rot;
+		player->pos += Vec3(cos(d)*10.f*dt, 0, sin(d)*10.f*dt);
+	}
+
+	// rotate player
+	auto& mouse_dif = input->GetMouseMove();
+	player->rot = Clip(player->rot + float(mouse_dif.x) / 800);
 
 	// update camera
-	auto& mouse_dif = input->GetMouseMove();
-	player->rot += mouse_dif.x;
+	const Vec2 c_cam_angle = Vec2(PI + 0.1f, PI * 1.8f - 0.1f);
+	camera->rot.x = player->rot;
+	camera->rot.y = c_cam_angle.Clamp(camera->rot.y - float(mouse_dif.y) / 400);
 
-	Vec3 target = player->pos;
-	target.y += 1.5f;
+	const float dist = 2.f;
+	const float shift = 0.5f; // camera x shift
 
-	camera->to = target;
-	camera->from = target;
-	camera->from += Vec3(cos(player->rot + PI/2) * 2, 0.25f, sin(player->rot+PI/2) * 2);
+	Vec3 to = player->pos;
+	to.y += 1.5f;
+	if(shift != 0.f)
+	{
+		to += Vec3(sin(player->rot - PI/2)*shift, 0, cos(player->rot - PI/2)*shift);
+	}
 
+	Vec3 ray(0, -dist, 0);
+	Matrix mat = Matrix::Rotation(camera->rot.x, camera->rot.y, 0);
+	ray = Vec3::Transform(ray, mat);
+	Vec3 from = to + ray;
+	//vfrom += (from - vfrom) * d;
 
+	camera->to = to;
+	camera->from = from;
 }

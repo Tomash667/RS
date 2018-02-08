@@ -32,5 +32,4 @@ struct Game : GameHandler
 	Engine* engine;
 	Camera* camera;
 	SceneNode* player;
-	float cam_rot;
 };

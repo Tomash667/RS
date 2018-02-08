@@ -1,0 +1,13 @@
+Rotation
+
+1.25 PI3/2  1.75
+      /|\
+       |
+       |
+PI <---+---> 0
+       |
+       |
+      \|/
+0.75  PI/2   0.25
+
+Models have different base rotation so rotating by -PI/2 is required.

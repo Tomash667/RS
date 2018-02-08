@@ -3,7 +3,7 @@
 #include "InputManager.h"
 
 
-Window::Window(WindowHandler* handler, InputManager* input) : handler(handler), hwnd(nullptr), size(1024, 768), input(input), active(false), activation_point(-1, -1),
+Window::Window(WindowHandler* handler, InputManager* input) : handler(handler), hwnd(nullptr), size(300, 200), input(input), active(false), activation_point(-1, -1),
 fullscreen(false), replace_cursor(false), locked_cursor(true), cursor_visible(true)
 {
 	assert(input);
