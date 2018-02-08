@@ -6,10 +6,11 @@
 #include "Render.h"
 #include "ResourceManager.h"
 #include "Scene.h"
+#include "Gui.h"
 #include "Timer.h"
 
-Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), res_mgr(nullptr), scene(nullptr), shutdown(false),
-fps(0)
+Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), res_mgr(nullptr), scene(nullptr), gui(nullptr),
+shutdown(false), fps(0)
 {
 	assert(handler);
 	Logger::global = new Logger("log.txt");
@@ -17,6 +18,7 @@ fps(0)
 
 Engine::~Engine()
 {
+	delete gui;
 	delete scene;
 	delete res_mgr;
 	delete render;
@@ -78,6 +80,9 @@ void Engine::Init(StartupOptions& options)
 	scene = new Scene(render);
 	scene->Init();
 
+	gui = new Gui(render);
+	gui->Init();
+
 	Info("Init game.");
 	handler->OnInit();
 }
@@ -109,7 +114,11 @@ void Engine::Loop()
 		if(shutdown)
 			return;
 
+		render->BeginScene();
 		scene->Draw();
+		gui->Draw();
+		render->EndScene();
+
 		input->Update();
 	}
 }

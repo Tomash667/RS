@@ -2,15 +2,28 @@
 #include "Core.h"
 #include "Render.h"
 #include "Window.h"
+#include "Shader.h"
 
-struct Globals
+
+Shader::Shader() : vertex_shader(nullptr), pixel_shader(nullptr), layout(nullptr), buffer(nullptr)
 {
-	Matrix matWorldViewProj;
-	Vec4 color;
-};
+}
+
+Shader::~Shader()
+{
+	if(vertex_shader)
+		vertex_shader->Release();
+	if(pixel_shader)
+		pixel_shader->Release();
+	if(layout)
+		layout->Release();
+	if(buffer)
+		buffer->Release();
+}
+
 
 Render::Render(Window* window) : window(window), device(nullptr), context(nullptr), swap_chain(nullptr), render_target(nullptr), depth_stencil_view(nullptr),
-raster_state(nullptr)
+raster_state(nullptr), clear_color(0.f,0.f,0.f,1.f), vsync(true)
 {
 	assert(window);
 }
@@ -257,6 +270,42 @@ ID3DBlob* Render::CompileShader(cstring filename, cstring function, bool vertex)
 	return shaderBlob;
 }
 
+void Render::CreateShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size)
+{
+	// create vertex shader
+	CPtr<ID3DBlob> vs_buf = CompileShader(filename, "vs_main", true);
+	HRESULT result = device->CreateVertexShader(vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), nullptr, &shader.vertex_shader);
+	if(FAILED(result))
+		throw Format("Failed to create vertex shader (%u).", result);
+
+	// create pixel shader
+	CPtr<ID3DBlob> ps_buf = CompileShader(filename, "ps_main", false);
+	result = device->CreatePixelShader(ps_buf->GetBufferPointer(), ps_buf->GetBufferSize(), nullptr, &shader.pixel_shader);
+	if(FAILED(result))
+		throw Format("Failed to create pixel shader (%u).", result);
+
+	// create layout
+	result = device->CreateInputLayout(desc, desc_count, vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), &shader.layout);
+	if(FAILED(result))
+		throw Format("Failed to create input layout (%u).", result);
+
+	// create cbuffer for shader
+	if(cbuffer_size > 0)
+	{
+		D3D11_BUFFER_DESC cb_desc;
+		cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+		cb_desc.ByteWidth = cbuffer_size;
+		cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cb_desc.MiscFlags = 0;
+		cb_desc.StructureByteStride = 0;
+
+		result = device->CreateBuffer(&cb_desc, NULL, &shader.buffer);
+		if(FAILED(result))
+			throw Format("Failed to create cbuffer (%u).", result);
+	}
+}
+
 void Render::SetViewport()
 {
 	auto& wnd_size = window->GetSize();
@@ -291,4 +340,15 @@ void Render::CreateRasterState()
 		throw Format("Failed to create resterizer state (%u).", result);
 
 	context->RSSetState(raster_state);
+}
+
+void Render::BeginScene()
+{
+	context->ClearRenderTargetView(render_target, clear_color);
+	context->ClearDepthStencilView(depth_stencil_view, D3D11_CLEAR_DEPTH, 1.f, 0);
+}
+
+void Render::EndScene()
+{
+	swap_chain->Present(vsync ? 1 : 0, 0);
 }

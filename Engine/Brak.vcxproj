@@ -158,6 +158,7 @@
     <ClInclude Include="Include\File.h" />
     <ClInclude Include="Include\Forward.h" />
     <ClInclude Include="Include\GameHandler.h" />
+    <ClInclude Include="Include\Gui.h" />
     <ClInclude Include="Include\InputManager.h" />
     <ClInclude Include="Include\Key.h" />
     <ClInclude Include="Include\Logger.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Include\ResourceManager.h" />
     <ClInclude Include="Include\Scene.h" />
     <ClInclude Include="Include\SceneNode.h" />
+    <ClInclude Include="Include\Shader.h" />
     <ClInclude Include="Include\StartupOptions.h" />
     <ClInclude Include="Include\Text.h" />
     <ClInclude Include="Include\Texture.h" />
@@ -176,6 +178,7 @@
     <ClInclude Include="Include\WICTextureLoader.h" />
     <ClInclude Include="Include\Window.h" />
     <ClInclude Include="Include\WindowHandler.h" />
+    <ClInclude Include="Source\GuiShader.h" />
     <ClInclude Include="Source\MeshShader.h" />
     <ClInclude Include="Source\QmshLoader.h" />
   </ItemGroup>
@@ -185,6 +188,8 @@
     <ClCompile Include="Source\CoreMath.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\File.cpp" />
+    <ClCompile Include="Source\Gui.cpp" />
+    <ClCompile Include="Source\GuiShader.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\Mesh.cpp" />

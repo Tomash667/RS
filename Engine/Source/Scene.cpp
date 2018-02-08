@@ -27,10 +27,6 @@ void Scene::Add(SceneNode* node)
 
 void Scene::Draw()
 {
-	auto context = render->GetContext();
-	context->ClearRenderTargetView(render->GetRenderTarget(), Vec4(0, 0.5f, 1.f, 1.f));
-	context->ClearDepthStencilView(render->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.f, 0);
-
 	auto& wnd_size = render->GetWindow()->GetSize();
 
 	Matrix matWorld,
@@ -57,14 +53,6 @@ void Scene::Draw()
 
 		shader->Draw(node->mesh);
 	}
-
-	bool vsync_enabled;
-#ifdef _DEBUG
-	vsync_enabled = false;
-#else
-	vsync_enabled = true;
-#endif
-	render->GetSwapChain()->Present(vsync_enabled ? 1 : 0, 0);
 }
 
 void Scene::Init()

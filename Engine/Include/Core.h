@@ -143,6 +143,10 @@ public:
 	{
 		return ptr;
 	}
+	operator T** ()
+	{
+		return &ptr;
+	}
 	T* operator -> ()
 	{
 		return ptr;
@@ -164,7 +168,7 @@ public:
 	}
 
 private:
-	T * ptr;
+	T* ptr;
 	Allocator allocator;
 };
 

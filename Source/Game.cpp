@@ -11,6 +11,9 @@
 #include <Window.h>
 #include <InputManager.h>
 #include <ctime>
+#include <MeshInstance.h>
+#include <Render.h>
+#include <Gui.h>
 
 
 Game::Game() : engine(nullptr)
@@ -49,8 +52,11 @@ void Game::OnInit()
 	player = new SceneNode;
 	player->SetMeshInstance(mesh);
 	player->pos = Vec3(0, 0, 0);
-	player->rot = 0;
+	player->rot = PI;
 	scene->Add(player);
+
+	moving = false;
+	player->inst->Play("stoi", 0, 0);
 
 	camera = scene->GetCamera();
 	camera->from = Vec3(-5, 5, -5);
@@ -61,6 +67,24 @@ void Game::OnInit()
 	floor->pos = Vec3(0, 0, 0);
 	floor->rot = 0;
 	scene->Add(floor);
+
+
+	SceneNode* marker = new SceneNode;
+	marker->pos = Vec3(0, 0, 0);
+	marker->rot = 0;
+	marker->mesh = res_mgr->GetMesh("marker.qmsh");
+	scene->Add(marker);
+
+	engine->GetRender()->SetClearColor(Vec4(0, 0.5f, 1, 1));
+
+	const Int2& wnd_size = engine->GetWindow()->GetSize();
+
+	Gui* gui = engine->GetGui();
+	Sprite* sprite = new Sprite;
+	sprite->image = res_mgr->GetTexture("crosshair_dot.png");
+	sprite->size = Int2(16, 16);
+	sprite->pos = (wnd_size - sprite->size) / 2;
+	gui->Add(sprite);
 }
 
 //void Game::LoadResources()
@@ -120,6 +144,8 @@ void Game::OnUpdate(float dt)
 	if(input->Down(Key::Alt) && input->Pressed(Key::U))
 		engine->GetWindow()->UnlockCursor(true);
 
+
+	// update player
 	int dir = 0;
 	if(input->Down(Key::W))
 		dir += 10;
@@ -131,6 +157,8 @@ void Game::OnUpdate(float dt)
 		dir -= 1;
 	if(dir != 0)
 	{
+		const float speed = 7.f;
+
 		float d;
 		switch(dir)
 		{
@@ -161,13 +189,28 @@ void Game::OnUpdate(float dt)
 			break;
 		}
 
-		d -= player->rot;
-		player->pos += Vec3(cos(d)*10.f*dt, 0, sin(d)*10.f*dt);
+		d += player->rot - PI / 2;
+		player->pos += Vec3(sin(d)*speed*dt, 0, cos(d)*speed*dt);
+
+		if(!moving)
+		{
+			player->inst->Play("biegnie", 0, 0);
+			moving = true;
+		}
+	}
+	else
+	{
+		if(moving)
+		{
+			player->inst->Play("stoi", 0, 0);
+			moving = false;
+		}
 	}
 
-	// rotate player
 	auto& mouse_dif = input->GetMouseMove();
 	player->rot = Clip(player->rot + float(mouse_dif.x) / 800);
+
+	player->inst->Update(dt);
 
 	// update camera
 	const Vec2 c_cam_angle = Vec2(PI + 0.1f, PI * 1.8f - 0.1f);
@@ -175,13 +218,13 @@ void Game::OnUpdate(float dt)
 	camera->rot.y = c_cam_angle.Clamp(camera->rot.y - float(mouse_dif.y) / 400);
 
 	const float dist = 2.f;
-	const float shift = 0.5f; // camera x shift
+	const float shift = 0.4f; // camera x shift
 
 	Vec3 to = player->pos;
 	to.y += 1.5f;
 	if(shift != 0.f)
 	{
-		to += Vec3(sin(player->rot - PI/2)*shift, 0, cos(player->rot - PI/2)*shift);
+		to += Vec3(sin(player->rot - PI / 2)*shift, 0, cos(player->rot - PI / 2)*shift);
 	}
 
 	Vec3 ray(0, -dist, 0);
@@ -192,4 +235,7 @@ void Game::OnUpdate(float dt)
 
 	camera->to = to;
 	camera->from = from;
+
+	// TODO: remove
+	engine->GetWindow()->SetTitle(Format("X:%g; Z:%g; R:%g", player->pos.x, player->pos.z, Clip(player->rot + PI / 2)));
 }

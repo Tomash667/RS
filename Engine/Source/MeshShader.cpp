@@ -4,21 +4,6 @@
 #include "Texture.h"
 #include "Render.h"
 
-MeshShader::Shader::Shader() : vertex_shader(nullptr), pixel_shader(nullptr), layout(nullptr), buffer(nullptr)
-{
-}
-
-MeshShader::Shader::~Shader()
-{
-	if(vertex_shader)
-		vertex_shader->Release();
-	if(pixel_shader)
-		pixel_shader->Release();
-	if(layout)
-		layout->Release();
-	if(buffer)
-		buffer->Release();
-}
 
 MeshShader::MeshShader() : sampler(nullptr), current_shader(nullptr)
 {
@@ -63,11 +48,11 @@ void MeshShader::InitMeshShader()
 {
 	D3D11_INPUT_ELEMENT_DESC desc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
-	InitShader(mesh_shader, "mesh.hlsl", desc, countof(desc), sizeof(Buffer));
+	render->CreateShader(mesh_shader, "mesh.hlsl", desc, countof(desc), sizeof(Buffer));
 	mesh_shader.vertex_size = sizeof(Vertex);
 }
 
@@ -75,49 +60,14 @@ void MeshShader::InitAnimatedMeshShader()
 {
 	D3D11_INPUT_ELEMENT_DESC desc[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "BLENDWEIGHT", 0, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "BLENDINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "BLENDWEIGHT", 0, DXGI_FORMAT_R32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BLENDINDICES", 0, DXGI_FORMAT_R8G8B8A8_UINT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
-	InitShader(animated_shader, "animated.hlsl", desc, countof(desc), sizeof(AniBuffer));
+	render->CreateShader(animated_shader, "animated.hlsl", desc, countof(desc), sizeof(AniBuffer));
 	animated_shader.vertex_size = sizeof(AniVertex);
-}
-
-void MeshShader::InitShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size)
-{
-	auto device = render->GetDevice();
-
-	// create vertex shader
-	CPtr<ID3DBlob> vs_buf = render->CompileShader(filename, "vs_main", true);
-	HRESULT result = device->CreateVertexShader(vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), nullptr, &shader.vertex_shader);
-	if(FAILED(result))
-		throw Format("Failed to create vertex shader (%u).", result);
-
-	// create pixel shader
-	CPtr<ID3DBlob> ps_buf = render->CompileShader(filename, "ps_main", false);
-	result = device->CreatePixelShader(ps_buf->GetBufferPointer(), ps_buf->GetBufferSize(), nullptr, &shader.pixel_shader);
-	if(FAILED(result))
-		throw Format("Failed to create pixel shader (%u).", result);
-
-	// create layout
-	result = device->CreateInputLayout(desc, desc_count, vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), &shader.layout);
-	if(FAILED(result))
-		throw Format("Failed to create input layout (%u).", result);
-
-	// create cbuffer for shader
-	D3D11_BUFFER_DESC cb_desc;
-	cb_desc.Usage = D3D11_USAGE_DYNAMIC;
-	cb_desc.ByteWidth = cbuffer_size;
-	cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cb_desc.MiscFlags = 0;
-	cb_desc.StructureByteStride = 0;
-
-	result = device->CreateBuffer(&cb_desc, NULL, &shader.buffer);
-	if(FAILED(result))
-		throw Format("Failed to create cbuffer (%u).", result);
 }
 
 void MeshShader::SetParams(bool is_animated)

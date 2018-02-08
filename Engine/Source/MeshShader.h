@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Shader.h"
+
 struct MeshShader
 {
 	MeshShader();
@@ -10,18 +12,6 @@ struct MeshShader
 	void Draw(Mesh* mesh);
 
 private:
-	struct Shader
-	{
-		ID3D11VertexShader* vertex_shader;
-		ID3D11PixelShader* pixel_shader;
-		ID3D11InputLayout* layout;
-		ID3D11Buffer* buffer;
-		uint vertex_size;
-
-		Shader();
-		~Shader();
-	};
-
 	struct Buffer
 	{
 		Matrix matWorldViewProj;
@@ -35,7 +25,6 @@ private:
 
 	void InitMeshShader();
 	void InitAnimatedMeshShader();
-	void InitShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size);
 
 	Render* render;
 	Shader mesh_shader, animated_shader;

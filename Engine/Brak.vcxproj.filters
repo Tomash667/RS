@@ -110,6 +110,15 @@
     <ClInclude Include="Include\Logger.h">
       <Filter>Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Gui.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GuiShader.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Shader.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -168,6 +177,12 @@
     </ClCompile>
     <ClCompile Include="Source\Logger.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Gui.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GuiShader.cpp">
+      <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

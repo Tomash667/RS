@@ -32,4 +32,5 @@ struct Game : GameHandler
 	Engine* engine;
 	Camera* camera;
 	SceneNode* player;
+	bool moving;
 };
