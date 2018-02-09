@@ -22,4 +22,5 @@ private:
 	Shader shader;
 	CPtr<ID3D11SamplerState> sampler;
 	CPtr<ID3D11Buffer> vb;
+	CPtr<ID3D11BlendState> blend_state;
 };

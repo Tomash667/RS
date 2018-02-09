@@ -5,14 +5,8 @@
 #include "Render.h"
 
 
-MeshShader::MeshShader() : sampler(nullptr), current_shader(nullptr)
+MeshShader::MeshShader() : current_shader(nullptr)
 {
-}
-
-MeshShader::~MeshShader()
-{
-	if(sampler)
-		sampler->Release();
 }
 
 void MeshShader::Init(Render* render)
@@ -39,7 +33,7 @@ void MeshShader::Init(Render* render)
 	sampler_desc.MinLOD = 0;
 	sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	HRESULT result = render->GetDevice()->CreateSamplerState(&sampler_desc, &sampler);
+	HRESULT result = render->GetDevice()->CreateSamplerState(&sampler_desc, sampler);
 	if(FAILED(result))
 		throw Format("Failed to create sampler state (%u).", result);
 }
@@ -84,7 +78,7 @@ void MeshShader::SetParams(bool is_animated)
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->VSSetConstantBuffers(0, 1, &shader.buffer);
 	context->VSSetShader(shader.vertex_shader, nullptr, 0);
-	context->PSSetSamplers(0, 1, &sampler);
+	context->PSSetSamplers(0, 1, &sampler.Get());
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 }
 

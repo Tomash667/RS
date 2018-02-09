@@ -4,7 +4,7 @@
 #include "Window.h"
 #include "Texture.h"
 
-GuiShader::GuiShader() : render(nullptr), sampler(nullptr), vb(nullptr)
+GuiShader::GuiShader() : render(nullptr)
 {}
 
 void GuiShader::Init(Render* render)
@@ -49,10 +49,25 @@ void GuiShader::Init(Render* render)
 	v_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	v_desc.MiscFlags = 0;
 	v_desc.StructureByteStride = 0;
-	
+
 	result = render->GetDevice()->CreateBuffer(&v_desc, nullptr, vb);
 	if(FAILED(result))
 		throw Format("Failed to create gui vertex buffer (%u).", result);
+
+	// create blend state
+	D3D11_BLEND_DESC b_desc = { 0 };
+	b_desc.RenderTarget[0].BlendEnable = true;
+	b_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	b_desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	b_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	b_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	b_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	b_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	b_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	result = render->GetDevice()->CreateBlendState(&b_desc, blend_state);
+	if(FAILED(result))
+		throw Format("Failed to create gui blend state (%u).", result);
 }
 
 void GuiShader::SetParams()
@@ -63,6 +78,7 @@ void GuiShader::SetParams()
 	context->VSSetShader(shader.vertex_shader, nullptr, 0);
 	context->PSSetSamplers(0, 1, &sampler.Get());
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
+	context->OMSetBlendState(blend_state, nullptr, 0xFFFFFFFF);
 
 	// set size
 	Vec2 wnd_size = Vec2(render->GetWindow()->GetSize());

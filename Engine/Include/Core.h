@@ -128,6 +128,10 @@ public:
 	{
 		ptr = allocator.Create();
 	}
+	template<typename U = T>
+	Ptr(typename std::enable_if<std::is_abstract<U>::value || !std::is_default_constructible<U>::value>::type* = nullptr) : ptr(nullptr)
+	{
+	}
 	~Ptr()
 	{
 		if(ptr)

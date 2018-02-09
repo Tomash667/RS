@@ -5,7 +5,6 @@
 struct MeshShader
 {
 	MeshShader();
-	~MeshShader();
 	void Init(Render* render);
 	void SetParams(bool is_anim);
 	void SetBuffer(const Matrix& matWorldViewProj, const vector<Matrix>* matBones);
@@ -28,6 +27,6 @@ private:
 
 	Render* render;
 	Shader mesh_shader, animated_shader;
-	ID3D11SamplerState* sampler;
+	CPtr<ID3D11SamplerState> sampler;
 	Shader* current_shader;
 };

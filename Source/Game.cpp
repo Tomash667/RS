@@ -85,6 +85,14 @@ void Game::OnInit()
 	sprite->size = Int2(16, 16);
 	sprite->pos = (wnd_size - sprite->size) / 2;
 	gui->Add(sprite);
+
+	ProgressBar* hp_bar = new ProgressBar;
+	hp_bar->image_back = res_mgr->GetTexture("bar_empty.png");
+	hp_bar->image_front = res_mgr->GetTexture("hp_bar.png");
+	hp_bar->size = Int2(128, 8);
+	hp_bar->pos = Int2(0, wnd_size.y - hp_bar->size.y);
+	hp_bar->progress = 0.6f;
+	gui->Add(hp_bar);
 }
 
 //void Game::LoadResources()

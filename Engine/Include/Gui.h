@@ -11,9 +11,19 @@ struct Control
 
 struct Sprite : Control
 {
+	Sprite();
 	void Draw() override;
 
 	Texture* image;
+};
+
+struct ProgressBar : Control
+{
+	ProgressBar();
+	void Draw() override;
+
+	Texture* image_front, *image_back;
+	float progress;
 };
 
 struct Gui
@@ -23,6 +33,7 @@ struct Gui
 	void Add(Control* control);
 	void Draw();
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size);
+	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
 	void Init();
 
 private:
