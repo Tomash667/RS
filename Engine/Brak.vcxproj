@@ -179,6 +179,7 @@
     <ClInclude Include="Include\Window.h" />
     <ClInclude Include="Include\WindowHandler.h" />
     <ClInclude Include="Source\GuiShader.h" />
+    <ClInclude Include="Source\InternalHelper.h" />
     <ClInclude Include="Source\MeshShader.h" />
     <ClInclude Include="Source\QmshLoader.h" />
   </ItemGroup>

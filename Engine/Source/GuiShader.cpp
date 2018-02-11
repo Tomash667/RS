@@ -23,7 +23,7 @@ void GuiShader::Init(Render* render)
 
 	// create texture sampler
 	D3D11_SAMPLER_DESC sampler_desc;
-	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler_desc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 	sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -68,6 +68,8 @@ void GuiShader::Init(Render* render)
 	result = render->GetDevice()->CreateBlendState(&b_desc, blend_state);
 	if(FAILED(result))
 		throw Format("Failed to create gui blend state (%u).", result);
+
+	render->GetContext()->OMGetBlendState(no_blend_state, nullptr, nullptr);
 }
 
 void GuiShader::SetParams()
@@ -87,6 +89,14 @@ void GuiShader::SetParams()
 	memcpy(mappedResource.pData, &wnd_size, sizeof(wnd_size));
 	context->Unmap(shader.buffer, 0);
 	context->VSSetConstantBuffers(0, 1, &shader.buffer);
+
+	render->SetDepthTest(false);
+}
+
+void GuiShader::RestoreParams()
+{
+	render->GetContext()->OMSetBlendState(no_blend_state, nullptr, 0xFFFFFFFF);
+	render->SetDepthTest(true);
 }
 
 void GuiShader::Draw(Texture* tex, Vertex* v, uint count)

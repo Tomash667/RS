@@ -38,3 +38,4 @@ struct ID3D11RasterizerState;
 struct ID3D11ShaderResourceView;
 struct ID3D11Buffer;
 struct D3D11_INPUT_ELEMENT_DESC;
+struct ID3D11DepthStencilState;

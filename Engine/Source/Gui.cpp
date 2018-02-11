@@ -51,6 +51,7 @@ void Gui::Draw()
 	shader->SetParams();
 	for(Control* control : controls)
 		control->Draw();
+	shader->RestoreParams();
 }
 
 void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)

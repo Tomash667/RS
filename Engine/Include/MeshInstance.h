@@ -153,7 +153,7 @@ public:
 	bool IsBlending() const;
 
 private:
-	Mesh * mesh;
+	Mesh* mesh;
 	vector<Matrix> mat_bones;
 	vector<Mesh::KeyframeBone> blendb;
 	vector<Group> groups;

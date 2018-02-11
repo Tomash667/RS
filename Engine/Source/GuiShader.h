@@ -13,6 +13,7 @@ struct GuiShader
 	GuiShader();
 	void Init(Render* render);
 	void SetParams();
+	void RestoreParams();
 	void Draw(Texture* tex, Vertex* v, uint count);
 
 	static const uint MaxVertex = 6;
@@ -22,5 +23,5 @@ private:
 	Shader shader;
 	CPtr<ID3D11SamplerState> sampler;
 	CPtr<ID3D11Buffer> vb;
-	CPtr<ID3D11BlendState> blend_state;
+	CPtr<ID3D11BlendState> blend_state, no_blend_state;
 };

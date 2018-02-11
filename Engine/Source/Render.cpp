@@ -23,23 +23,20 @@ Shader::~Shader()
 
 
 Render::Render(Window* window) : window(window), device(nullptr), context(nullptr), swap_chain(nullptr), render_target(nullptr), depth_stencil_view(nullptr),
-raster_state(nullptr), clear_color(0.f,0.f,0.f,1.f), vsync(true)
+raster_state(nullptr), clear_color(0.f,0.f,0.f,1.f), vsync(true), depth_state(nullptr), no_depth_state(nullptr)
 {
 	assert(window);
 }
 
 Render::~Render()
 {
-	if(raster_state)
-		raster_state->Release();
-	if(depth_stencil_view)
-		depth_stencil_view->Release();
-	if(render_target)
-		render_target->Release();
-	if(swap_chain)
-		swap_chain->Release();
-	if(context)
-		context->Release();
+	SafeRelease(depth_state);
+	SafeRelease(no_depth_state);
+	SafeRelease(raster_state);
+	SafeRelease(depth_stencil_view);
+	SafeRelease(render_target);
+	SafeRelease(swap_chain);
+	SafeRelease(context);
 
 	if(device)
 	{
@@ -154,8 +151,6 @@ void Render::CreateRenderTargetView()
 
 void Render::CreateDepthStencilView()
 {
-	HRESULT result;
-
 	auto& wnd_size = window->GetSize();
 
 	// create depth buffer texture
@@ -175,9 +170,7 @@ void Render::CreateDepthStencilView()
 
 	// Create the texture for the depth buffer using the filled out description.
 	ID3D11Texture2D* m_depthStencilBuffer;
-	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer);
-	if(FAILED(result))
-		throw Format("Failed to create depth buffer texture (%u).", result);
+	C(device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer));
 
 	//==================================================================
 	// Depth stencil state
@@ -203,14 +196,14 @@ void Render::CreateDepthStencilView()
 	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	ID3D11DepthStencilState* m_depthStencilState;
 	// Create the depth stencil state.
-	result = device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
-	if(FAILED(result))
-		throw Format("Failed to create depth stencil state (%u).", result);
+	C(device->CreateDepthStencilState(&depthStencilDesc, &depth_state));
+	context->OMSetDepthStencilState(depth_state, 1);
 
-	context->OMSetDepthStencilState(m_depthStencilState, 1);
-	m_depthStencilState->Release();
+	// create depth stencil state with disabled z test
+	depthStencilDesc.DepthEnable = false;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	C(device->CreateDepthStencilState(&depthStencilDesc, &no_depth_state));
 
 	//==================================================================
 	// Initailze the depth stencil view.
@@ -222,9 +215,7 @@ void Render::CreateDepthStencilView()
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.
-	result = device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &depth_stencil_view);
-	if(FAILED(result))
-		throw Format("Failed to create depth stencil view (%u).", result);
+	C(device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &depth_stencil_view));
 
 	m_depthStencilBuffer->Release();
 }
@@ -351,4 +342,9 @@ void Render::BeginScene()
 void Render::EndScene()
 {
 	swap_chain->Present(vsync ? 1 : 0, 0);
+}
+
+void Render::SetDepthTest(bool enabled)
+{
+	context->OMSetDepthStencilState(enabled ? depth_state : no_depth_state, 0);
 }

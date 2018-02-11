@@ -12,5 +12,4 @@
 #include <cassert>
 #include <Windows.h>
 #include "Brak.h"
-
-#undef RegisterClass
+#include "InternalHelper.h"

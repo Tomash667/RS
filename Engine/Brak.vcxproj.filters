@@ -119,6 +119,9 @@
     <ClInclude Include="Include\Shader.h">
       <Filter>Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Source\InternalHelper.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">

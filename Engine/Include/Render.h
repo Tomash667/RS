@@ -19,6 +19,7 @@ struct Render
 	const Vec4& GetClearColor() { return clear_color; }
 
 	void SetClearColor(const Vec4& clear_color) { this->clear_color = clear_color; }
+	void SetDepthTest(bool enabled);
 
 private:
 	void CreateDeviceAndSwapChain();
@@ -34,6 +35,7 @@ private:
 	ID3D11RenderTargetView* render_target;
 	ID3D11DepthStencilView* depth_stencil_view;
 	ID3D11RasterizerState* raster_state;
+	ID3D11DepthStencilState* depth_state, *no_depth_state;
 	Vec4 clear_color;
 	bool vsync;
 };
