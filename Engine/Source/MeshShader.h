@@ -6,6 +6,7 @@ struct MeshShader
 {
 	MeshShader();
 	void Init(Render* render);
+	void ResetParams();
 	void SetParams(bool is_anim);
 	void SetBuffer(const Matrix& matWorldViewProj, const vector<Matrix>* matBones);
 	void Draw(Mesh* mesh);

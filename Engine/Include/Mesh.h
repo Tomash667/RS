@@ -136,6 +136,8 @@ struct Mesh final : Resource
 	Bone* GetBone(cstring name);
 	Point* GetPoint(cstring name);
 
+	bool IsAnimated() const { return IS_SET(head.flags, F_ANIMATED); }
+
 	Header head;
 	ID3D11Buffer* vb;
 	ID3D11Buffer* ib;

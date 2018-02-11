@@ -66,6 +66,10 @@ public:
 		{
 			return time / anim->length;
 		}
+		Mesh::Animation* GetAnimation() const
+		{
+			return anim;
+		}
 
 		bool IsActive() const
 		{

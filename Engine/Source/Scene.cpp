@@ -34,16 +34,21 @@ void Scene::Draw()
 		matView = camera->GetViewMatrix(),
 		matCombined;
 
+	shader->ResetParams();
+
 	for(auto node : nodes)
 	{
+		if(!node->visible)
+			continue;
+
 		matWorld = Matrix::RotationY(node->rot) * Matrix::Translation(node->pos);
 		matCombined = matWorld * matView * matProj;
 
-		if(node->inst)
+		if(node->GetMeshInstance())
 		{
-			node->inst->SetupBones();
+			node->GetMeshInstance()->SetupBones();
 			shader->SetParams(true);
-			shader->SetBuffer(matCombined, &node->inst->GetMatrixBones());
+			shader->SetBuffer(matCombined, &node->GetMeshInstance()->GetMatrixBones());
 		}
 		else
 		{
@@ -51,7 +56,7 @@ void Scene::Draw()
 			shader->SetBuffer(matCombined, nullptr);
 		}
 
-		shader->Draw(node->mesh);
+		shader->Draw(node->GetMesh());
 	}
 }
 

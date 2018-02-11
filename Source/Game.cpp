@@ -49,32 +49,32 @@ void Game::OnInit()
 
 	Mesh* mesh = res_mgr->GetMesh("human.qmsh");
 
-	player = new SceneNode;
+	player = new SceneNode("player");
 	player->SetMeshInstance(mesh);
 	player->pos = Vec3(0, 0, 0);
 	player->rot = PI;
 	scene->Add(player);
 
 	moving = false;
-	player->inst->Play("stoi", 0, 0);
+	player->GetMeshInstance()->Play("stoi", 0, 0);
 
 	camera = scene->GetCamera();
 	camera->from = Vec3(-5, 5, -5);
 	camera->to = Vec3(0, 1, 0);
 
-	SceneNode* floor = new SceneNode;
-	floor->mesh = res_mgr->GetMesh("floor.qmsh");
+	SceneNode* floor = new SceneNode("floor");
+	floor->SetMesh(res_mgr->GetMesh("floor.qmsh"));
 	floor->pos = Vec3(0, 0, 0);
 	floor->rot = 0;
 	scene->Add(floor);
 
 
-	SceneNode* marker = new SceneNode;
+	SceneNode* marker = new SceneNode("marker");
 	marker->pos = Vec3(0, 0, 0);
 	marker->rot = 0;
-	marker->mesh = res_mgr->GetMesh("marker.qmsh");
+	marker->SetMesh(res_mgr->GetMesh("marker.qmsh"));
 	scene->Add(marker);
-
+	
 	engine->GetRender()->SetClearColor(Vec4(0, 0.5f, 1, 1));
 
 	const Int2& wnd_size = engine->GetWindow()->GetSize();
@@ -165,7 +165,12 @@ void Game::OnUpdate(float dt)
 		dir -= 1;
 	if(dir != 0)
 	{
-		const float speed = 7.f;
+		float speed = 7.f;
+		if(player->GetMeshInstance()->GetGroup(0).GetAnimation()->name == "biegnie")
+			speed *= player->GetMeshInstance()->GetGroup(0).GetBlendT();
+		else
+			speed = 0.f;
+		speed *= dt;
 
 		float d;
 		switch(dir)
@@ -198,11 +203,11 @@ void Game::OnUpdate(float dt)
 		}
 
 		d += player->rot - PI / 2;
-		player->pos += Vec3(sin(d)*speed*dt, 0, cos(d)*speed*dt);
+		player->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
 
 		if(!moving)
 		{
-			player->inst->Play("biegnie", 0, 0);
+			player->GetMeshInstance()->Play("biegnie", 0, 0);
 			moving = true;
 		}
 	}
@@ -210,7 +215,7 @@ void Game::OnUpdate(float dt)
 	{
 		if(moving)
 		{
-			player->inst->Play("stoi", 0, 0);
+			player->GetMeshInstance()->Play("stoi", 0, 0);
 			moving = false;
 		}
 	}
@@ -218,8 +223,8 @@ void Game::OnUpdate(float dt)
 	auto& mouse_dif = input->GetMouseMove();
 	player->rot = Clip(player->rot + float(mouse_dif.x) / 800);
 
-	player->inst->Update(dt);
-
+	player->GetMeshInstance()->Update(dt);
+	
 	// update camera
 	const Vec2 c_cam_angle = Vec2(PI + 0.1f, PI * 1.8f - 0.1f);
 	camera->rot.x = player->rot;

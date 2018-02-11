@@ -64,6 +64,14 @@ void MeshShader::InitAnimatedMeshShader()
 	animated_shader.vertex_size = sizeof(AniVertex);
 }
 
+void MeshShader::ResetParams()
+{
+	current_shader = nullptr;
+	auto context = render->GetContext();
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->PSSetSamplers(0, 1, &sampler.Get());
+}
+
 void MeshShader::SetParams(bool is_animated)
 {
 	Shader* shader_ptr = &(is_animated ? animated_shader : mesh_shader);
@@ -75,10 +83,8 @@ void MeshShader::SetParams(bool is_animated)
 	auto& shader = *shader_ptr;
 
 	context->IASetInputLayout(shader.layout);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->VSSetConstantBuffers(0, 1, &shader.buffer);
 	context->VSSetShader(shader.vertex_shader, nullptr, 0);
-	context->PSSetSamplers(0, 1, &sampler.Get());
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 }
 
