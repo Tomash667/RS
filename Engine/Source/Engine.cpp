@@ -113,7 +113,9 @@ void Engine::Loop()
 		handler->OnUpdate(dt);
 		if(shutdown)
 			return;
+		gui->Update(dt);
 
+		// draw
 		render->BeginScene();
 		scene->Draw();
 		gui->Draw();

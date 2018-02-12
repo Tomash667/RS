@@ -3,8 +3,8 @@
 #include "InputManager.h"
 
 
-Window::Window(WindowHandler* handler, InputManager* input) : handler(handler), hwnd(nullptr), size(1024, 768), input(input), active(false), activation_point(-1, -1),
-fullscreen(false), replace_cursor(false), locked_cursor(true), cursor_visible(true)
+Window::Window(WindowHandler* handler, InputManager* input) : handler(handler), hwnd(nullptr), size(300, 200), input(input), active(false),
+activation_point(-1, -1), fullscreen(false), replace_cursor(false), locked_cursor(true), cursor_visible(true)
 {
 	assert(input);
 	assert(handler);
@@ -37,10 +37,6 @@ bool Window::Tick()
 		}
 		else
 		{
-			//Sleep(1);
-
-
-
 			// update activity state
 			HWND foreground = GetForegroundWindow();
 			bool is_active = (foreground == (HWND)hwnd);
@@ -93,29 +89,32 @@ void Window::SetSize(const Int2& new_size)
 
 void Window::RegisterClass()
 {
+	HINSTANCE module = GetModuleHandle(nullptr);
+	HICON icon = LoadIcon(module, "Icon");
+
 	WNDCLASSEX wc = {
 		sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS,
 		[](HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) -> LRESULT
-	{
-		if(msg == WM_NCCREATE)
 		{
-			CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
-			Window* window = (Window*)cs->lpCreateParams;
-			window->hwnd = hwnd;
-			SetWindowLongPtr(hwnd, GWLP_USERDATA, (IntPointer)cs->lpCreateParams);
-		}
-		else
-		{
-			Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-			if(window)
+			if(msg == WM_NCCREATE)
 			{
-				assert(hwnd == (HWND)window->hwnd);
-				return window->HandleEvents(msg, wParam, lParam);
+				CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
+				Window* window = (Window*)cs->lpCreateParams;
+				window->hwnd = hwnd;
+				SetWindowLongPtr(hwnd, GWLP_USERDATA, (IntPointer)cs->lpCreateParams);
 			}
-		}
-		return DefWindowProc(hwnd, msg, wParam, lParam);
-	},
-		0, 0, GetModuleHandle(nullptr), LoadIcon(GetModuleHandle(nullptr), "Icon"), LoadCursor(nullptr, IDC_ARROW), (HBRUSH)GetStockObject(BLACK_BRUSH),
+			else
+			{
+				Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				if(window)
+				{
+					assert(hwnd == (HWND)window->hwnd);
+					return window->HandleEvents(msg, wParam, lParam);
+				}
+			}
+			return DefWindowProc(hwnd, msg, wParam, lParam);
+		},
+		0, 0, module, icon, LoadCursor(nullptr, IDC_ARROW), (HBRUSH)GetStockObject(BLACK_BRUSH),
 		nullptr, "Krystal", nullptr
 	};
 

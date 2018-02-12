@@ -4,6 +4,32 @@
 
 
 //=================================================================================================
+Container::~Container()
+{
+	DeleteElements(controls);
+}
+
+void Container::Add(Control* control)
+{
+	assert(control);
+	control->gui = gui;
+	controls.push_back(control);
+}
+
+void Container::Draw()
+{
+	for(Control* ctrl : controls)
+		ctrl->Draw();
+}
+
+void Container::Update(float dt)
+{
+	for(Control* ctrl : controls)
+		ctrl->Update(dt);
+}
+
+
+//=================================================================================================
 Sprite::Sprite() : image(nullptr)
 {}
 
@@ -28,29 +54,35 @@ void ProgressBar::Draw()
 
 
 //=================================================================================================
+void Label::Draw()
+{
+
+}
+
+
+//=================================================================================================
+void Panel::Draw()
+{
+
+}
+
+
+//=================================================================================================
 Gui::Gui(Render* render) : render(render), shader(new GuiShader)
 {
 	assert(render);
+	gui = this;
 }
 
 Gui::~Gui()
 {
-	DeleteElements(controls);
 	delete shader;
-}
-
-void Gui::Add(Control* control)
-{
-	assert(control);
-	control->gui = this;
-	controls.push_back(control);
 }
 
 void Gui::Draw()
 {
 	shader->SetParams();
-	for(Control* control : controls)
-		control->Draw();
+	Container::Draw();
 	shader->RestoreParams();
 }
 

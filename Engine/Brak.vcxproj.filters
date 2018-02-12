@@ -122,6 +122,12 @@
     <ClInclude Include="Source\InternalHelper.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Font.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FontLoader.h">
+      <Filter>Source\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -185,6 +191,9 @@
       <Filter>Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Source\GuiShader.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FontLoader.cpp">
       <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,6 +3,7 @@
 // external
 struct Camera;
 struct Engine;
+struct Font;
 struct GameHandler;
 struct Gui;
 struct InputManager;
@@ -17,7 +18,11 @@ struct Window;
 struct WindowHandler;
 
 // gui controls
+struct Container;
 struct Control;
+struct Label;
+struct Panel;
+struct ProgressBar;
 struct Sprite;
 
 // internal

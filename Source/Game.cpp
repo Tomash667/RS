@@ -59,8 +59,11 @@ void Game::OnInit()
 	player->GetMeshInstance()->Play("stoi", 0, 0);
 
 	camera = scene->GetCamera();
-	camera->from = Vec3(-5, 5, -5);
-	camera->to = Vec3(0, 1, 0);
+	camera->mode = Camera::THIRD_PERSON;
+	camera->target = player;
+	camera->dist = 2.f;
+	camera->shift = 0.4f;
+	camera->target_h = 1.5f;
 
 	SceneNode* floor = new SceneNode("floor");
 	floor->SetMesh(res_mgr->GetMesh("floor.qmsh"));
@@ -74,7 +77,7 @@ void Game::OnInit()
 	marker->rot = 0;
 	marker->SetMesh(res_mgr->GetMesh("marker.qmsh"));
 	scene->Add(marker);
-	
+
 	engine->GetRender()->SetClearColor(Vec4(0, 0.5f, 1, 1));
 
 	const Int2& wnd_size = engine->GetWindow()->GetSize();
@@ -165,42 +168,49 @@ void Game::OnUpdate(float dt)
 		dir -= 1;
 	if(dir != 0)
 	{
-		float speed = 7.f;
+		float speed, d;
+		switch(dir)
+		{
+		case +1: // right
+			d = 0;
+			speed = 5.f;
+			break;
+		case -9: // right back
+			d = PI / 4;
+			speed = 2.5f;
+			break;
+		case -10: // back
+			d = PI / 2;
+			speed = 2.5f;
+			break;
+		case -11: // left back
+			d = PI * 3 / 4;
+			speed = 2.5f;
+			break;
+		case -1: // left
+			d = PI;
+			speed = 5.f;
+			break;
+		case +9: // left forward
+			d = PI * 5 / 4;
+			speed = 7.f;
+			break;
+		default:
+		case +10: // forward
+			d = PI * 3 / 2;
+			speed = 7.f;
+			break;
+		case +11: // right forward
+			d = PI * 7 / 4;
+			speed = 7.f;
+			break;
+		}
+
 		if(player->GetMeshInstance()->GetGroup(0).GetAnimation()->name == "biegnie")
 			speed *= player->GetMeshInstance()->GetGroup(0).GetBlendT();
 		else
 			speed = 0.f;
 		speed *= dt;
-
-		float d;
-		switch(dir)
-		{
-		case +1: // right
-			d = 0;
-			break;
-		case -9: // right back
-			d = PI / 4;
-			break;
-		case -10: // back
-			d = PI / 2;
-			break;
-		case -11: // left back
-			d = PI * 3 / 4;
-			break;
-		case -1: // left
-			d = PI;
-			break;
-		case +9: // left forward
-			d = PI * 5 / 4;
-			break;
-		default:
-		case +10: // forward
-			d = PI * 3 / 2;
-			break;
-		case +11: // right forward
-			d = PI * 7 / 4;
-			break;
-		}
 
 		d += player->rot - PI / 2;
 		player->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
@@ -224,30 +234,12 @@ void Game::OnUpdate(float dt)
 	player->rot = Clip(player->rot + float(mouse_dif.x) / 800);
 
 	player->GetMeshInstance()->Update(dt);
-	
+
 	// update camera
 	const Vec2 c_cam_angle = Vec2(PI + 0.1f, PI * 1.8f - 0.1f);
 	camera->rot.x = player->rot;
 	camera->rot.y = c_cam_angle.Clamp(camera->rot.y - float(mouse_dif.y) / 400);
-
-	const float dist = 2.f;
-	const float shift = 0.4f; // camera x shift
-
-	Vec3 to = player->pos;
-	to.y += 1.5f;
-	if(shift != 0.f)
-	{
-		to += Vec3(sin(player->rot - PI / 2)*shift, 0, cos(player->rot - PI / 2)*shift);
-	}
-
-	Vec3 ray(0, -dist, 0);
-	Matrix mat = Matrix::Rotation(camera->rot.x, camera->rot.y, 0);
-	ray = Vec3::Transform(ray, mat);
-	Vec3 from = to + ray;
-	//vfrom += (from - vfrom) * d;
-
-	camera->to = to;
-	camera->from = from;
+	camera->Update(dt);
 
 	// TODO: remove
 	engine->GetWindow()->SetTitle(Format("X:%g; Z:%g; R:%g", player->pos.x, player->pos.z, Clip(player->rot + PI / 2)));
