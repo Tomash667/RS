@@ -58,6 +58,12 @@ void Game::OnInit()
 	moving = false;
 	player->GetMeshInstance()->Play("stoi", 0, 0);
 
+	SceneNode* gun = new SceneNode("gun");
+	gun->SetMeshInstance(res_mgr->GetMesh("m1911.qmsh"));
+	gun->pos = Vec3(0, 0, 0);
+	gun->rot = 0;
+	player->AddChild(gun);
+
 	camera = scene->GetCamera();
 	camera->mode = Camera::THIRD_PERSON;
 	camera->target = player;

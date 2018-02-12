@@ -28,35 +28,40 @@ void Scene::Add(SceneNode* node)
 void Scene::Draw()
 {
 	auto& wnd_size = render->GetWindow()->GetSize();
-
-	Matrix matWorld,
-		matProj = Matrix::CreatePerspectiveFieldOfView(PI / 4, float(wnd_size.x) / wnd_size.y, 0.1f, 100.f),
-		matView = camera->GetViewMatrix(),
-		matCombined;
+	mat_view_proj = camera->GetViewMatrix() * Matrix::CreatePerspectiveFieldOfView(PI / 4, float(wnd_size.x) / wnd_size.y, 0.1f, 100.f),
 
 	shader->ResetParams();
 
+	DrawNodes(nodes);
+}
+
+void Scene::DrawNodes(vector<SceneNode*>& nodes)
+{
 	for(auto node : nodes)
 	{
 		if(!node->visible)
 			continue;
 
-		matWorld = Matrix::RotationY(node->rot) * Matrix::Translation(node->pos);
-		matCombined = matWorld * matView * matProj;
+		mat_world = Matrix::RotationY(node->rot) * Matrix::Translation(node->pos);
+		mat_combined = mat_world * mat_view_proj;
 
 		if(node->GetMeshInstance())
 		{
 			node->GetMeshInstance()->SetupBones();
 			shader->SetParams(true);
-			shader->SetBuffer(matCombined, &node->GetMeshInstance()->GetMatrixBones());
+			shader->SetBuffer(mat_combined, &node->GetMeshInstance()->GetMatrixBones());
 		}
 		else
 		{
 			shader->SetParams(false);
-			shader->SetBuffer(matCombined, nullptr);
+			shader->SetBuffer(mat_combined, nullptr);
 		}
 
 		shader->Draw(node->GetMesh());
+
+		vector<SceneNode*>& childs = node->GetChildNodes();
+		if(!childs.empty())
+			DrawNodes(childs);
 	}
 }
 

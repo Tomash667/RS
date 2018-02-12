@@ -5,6 +5,13 @@
 SceneNode::~SceneNode()
 {
 	delete inst;
+	DeleteElements(childs);
+}
+
+void SceneNode::AddChild(SceneNode* node)
+{
+	assert(node);
+	childs.push_back(node);
 }
 
 void SceneNode::SetMesh(Mesh* mesh)

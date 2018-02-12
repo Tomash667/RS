@@ -334,7 +334,7 @@ inline bool InRange(__int64 value)
 inline float Slerp(float a, float b, float t)
 {
 	float angle = ShortestArc(a, b);
-	return a + angle * t;
+	return Clip(a + angle * t);
 }
 
 // Count 1 bits in value

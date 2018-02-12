@@ -12,10 +12,12 @@ struct SceneNode
 #endif
 	}
 	~SceneNode();
+	void AddChild(SceneNode* node);
 	void SetMesh(Mesh* mesh);
 	void SetMeshInstance(Mesh* mesh);
 	Mesh* GetMesh() { return mesh; }
 	MeshInstance* GetMeshInstance() { return inst; }
+	vector<SceneNode*>& GetChildNodes() { return childs; }
 
 #ifdef _DEBUG
 	string debug_name;
@@ -24,6 +26,7 @@ struct SceneNode
 	float rot;
 	bool visible;
 private:
-	Mesh * mesh;
+	Mesh* mesh;
 	MeshInstance* inst;
+	vector<SceneNode*> childs;
 };
