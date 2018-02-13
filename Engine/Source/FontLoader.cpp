@@ -17,7 +17,7 @@ Font::~Font()
 
 
 //=================================================================================================
-FontLoader::FontLoader() : render(nullptr)
+FontLoader::FontLoader() : render(nullptr), gdi_initialized(false)
 {}
 
 FontLoader::~FontLoader()
@@ -31,18 +31,18 @@ void FontLoader::Init(Render* render)
 	this->render = render;
 }
 
-Font* FontLoader::Create(cstring name, int size)
+Font* FontLoader::Load(cstring name, int size, int weight)
 {
-	const int padding = 1;
-	int weight = 500; // TODO
+	InitGdi();
+
 	Ptr<Font> font;
 	HDC hdc = GetDC(nullptr);
 	int logic_size = -MulDiv(size, 96, 72);
 	//int logic_size = -MulDiv(size, GetDeviceCaps(hdc, LOGPIXELSX), 72);
 
 	// create winapi font
-	HFONT winapi_font = CreateFontA(logic_size, 0, 0, 0, weight, false, false, false, DEFAULT_CHARSET, OUT_TT_PRECIS,
-		CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, name);
+	HFONT winapi_font = CreateFontA(logic_size, 0, 0, 0, weight, false, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, name);
 	if(!winapi_font)
 	{
 		DWORD error = GetLastError();
@@ -110,11 +110,11 @@ Font* FontLoader::Create(cstring name, int size)
 	desc.Height = tex_size.y;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 	desc.SampleDesc.Count = 1;
-	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE; // D3D11_BIND_SHADER_RESOURCE /*| D3D11_BIND_RENDER_TARGET*/;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.CPUAccessFlags = 0;// D3D11_CPU_ACCESS_WRITE;// | D3D11_CPU_ACCESS_READ;
+	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
 	CPtr<ID3D11Texture2D> tex;
@@ -125,151 +125,9 @@ Font* FontLoader::Create(cstring name, int size)
 		throw Format("Failed to create font texture '%s' (%ux%u, result %u).", name, tex_size.x, tex_size.y, result);
 	}
 
-	D3D11_RENDER_TARGET_VIEW_DESC target_desc = { 0 };
-	target_desc.Format = desc.Format;
-	target_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	target_desc.Texture2D.MipSlice = 0;
-
-	ID3D11RenderTargetView* render_target;
-	C(device->CreateRenderTargetView(tex, &target_desc, &render_target));
-
-	context->OMSetRenderTargets(1, &render_target, nullptr);
-
-	context->ClearRenderTargetView(render_target, Vec4(1.f, 1.f, 1.f, 0.f));
-	//context->ClearRenderTargetView(render_target, Vec4(1.f, 1.f, 1.f, 1.f));
-
-	//=============================
-	// WERSJA 4
-
-	
-
-	//Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	//ULONG_PTR           gdiplusToken;
-
-	// Initialize GDI+.
-	//Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
-	// draw to surface
-	IDXGISurface1* surface;
-	C(tex->QueryInterface(__uuidof(IDXGISurface1), (void**)&surface));
-
-	C(surface->GetDC(TRUE, &hdc));
-	{
-//		Gdiplus::Graphics graphics(hdc);
-		//graphics.SetTextRenderingHint(Gdiplus::TextRenderingHint::TextRenderingHintClearTypeGridFit);
-//		graphics.SetCompositingMode(Gdiplus::CompositingMode::CompositingModeSourceCopy);
-		//Gdiplus::Bitmap bmp(tex_size.x, tex_size.y, &graphics);
-		//bmp.
-		// white
-		//Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
-		// black
-//		Gdiplus::SolidBrush brush(Gdiplus::Color(255, 0, 0, 0));
-		//Gdiplus::SolidBrush alpha_brush(Gdiplus::Color(0, 255, 255, 255));
-//		Gdiplus::Font gdi_font(hdc, winapi_font);
-//		Gdiplus::PointF point;
-
-		//graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
-		//graphics.Clear(Gdiplus::Color(0, 255, 255, 255));
-
-		SetTextColor(hdc, 0xFFFFFFFF);
-		//SetBkMode(hdc, TRANSPARENT);
-
-		offset.x = padding;
-		offset.y = padding;
-		wchar_t wc[4];
-		char c[2];
-		c[1] = 0;
-		for(int i = 32; i <= 255; ++i)
-		{
-			Font::Glyph& glyph = font->glyph[i];
-			if(glyph.width == 0)
-				continue;
-
-			/*c[0] = (char)i;
-			mbstowcs(wc, c, 4);
-			point.X = (float)offset.x;
-			point.Y = (float)offset.y;
-			graphics.DrawString(wc, 1, &gdi_font, point, &brush);*/
-
-			char c2 = (char)i;
-			TextOutA(hdc, offset.x, offset.y, &c2, 1);
-			offset.x += glyph.width + padding;
-		}
-	}
-
-	C(render->GetSwapChain()->Present(0, 0));
-	render_target->Release();
-	render_target = render->GetRenderTarget();
-
-	context->OMSetRenderTargets(1, &render_target, render->GetDepthStencilView());
-
-	C(surface->ReleaseDC(nullptr));
-	surface->Release();
-
-
-
-
-	/* WERSJA 3 - nie dzia³a
-
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	result = render->GetContext()->Map(tex, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	for(uint y = 0; y < 32; ++y)
-	{
-		byte* data = ((byte*)mappedResource.pData) + mappedResource.RowPitch * y;
-		uint color = 0x004080FF;
-		memset(data, *(int*)&color, 4 * tex_size.x);
-	}
-	render->GetContext()->Unmap(tex, 0);*/
-
-
-	/* WERSJA 2 - GDI+
-
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR           gdiplusToken;
-
-	// Initialize GDI+.
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
-	// draw to surface
-	IDXGISurface1* surface;
-	C(tex->QueryInterface(__uuidof(IDXGISurface1), (void**)&surface));
-
-	C(surface->GetDC(TRUE, &hdc));
-	{
-		Gdiplus::Graphics graphics(hdc);
-		Gdiplus::Bitmap bmp(tex_size.x, tex_size.y, &graphics);
-		bmp.
-		Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
-		Gdiplus::SolidBrush alpha_brush(Gdiplus::Color(0, 255, 255, 255));
-		Gdiplus::Font gdi_font(hdc, winapi_font);
-		Gdiplus::PointF point;
-
-		graphics.Clear(Gdiplus::Color(255, 255, 255, 255));
-		//graphics.Clear(Gdiplus::Color(0, 255, 255, 255));
-
-		offset.x = padding;
-		offset.y = padding;
-		wchar_t wc[4];
-		char c[2];
-		c[1] = 0;
-		for(int i = 32; i <= 255; ++i)
-		{
-			Font::Glyph& glyph = font->glyph[i];
-			if(glyph.width == 0)
-				continue;
-			c[0] = (char)i;
-			mbstowcs(wc, c, 4);
-			point.X = (float)offset.x;
-			point.Y = (float)offset.y;
-			//graphics.DrawString(wc, 1, &gdi_font, point, &brush);
-			//TextOutA(hdc, offset.x, offset.y, &c, 1);
-			offset.x += glyph.width + padding;
-		}
-	}
-	C(surface->ReleaseDC(nullptr));
-	surface->Release();*/
+	// render font to texture
+	RenderFontToTexture(tex, font, winapi_font);
 	DeleteObject(winapi_font);
-
 
 	// create texture view
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
@@ -287,12 +145,66 @@ Font* FontLoader::Create(cstring name, int size)
 #ifdef _DEBUG
 	font->tex->name = Format("Font %s (%u)", name, size);
 #endif
-
+	
 	// make tab size of 4 spaces
 	Font::Glyph& tab = font->glyph['\t'];
 	Font::Glyph& space = font->glyph[' '];
 	tab.width = space.width * 4;;
 	tab.uv = space.uv;
 
+	fonts.push_back(font);
 	return font.Pin();
+}
+
+void FontLoader::InitGdi()
+{
+	if(gdi_initialized)
+		return;
+
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	gdiplusStartupInput.GdiplusVersion = 1;
+	gdiplusStartupInput.DebugEventCallback = nullptr;
+	gdiplusStartupInput.SuppressBackgroundThread = TRUE;
+	gdiplusStartupInput.SuppressExternalCodecs = TRUE;
+	ULONG_PTR gdiplusToken = 0;
+	Gdiplus::GdiplusStartupOutput output;
+
+	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, &output);
+	gdi_initialized = true;
+}
+
+void FontLoader::RenderFontToTexture(ID3D11Texture2D* tex, Font* font, void* winapi_font)
+{
+	IDXGISurface1* surface;
+	C(tex->QueryInterface(__uuidof(IDXGISurface1), (void**)&surface));
+	HDC hdc;
+	C(surface->GetDC(TRUE, &hdc));
+	
+	Gdiplus::Graphics graphics(hdc);
+	graphics.SetTextRenderingHint(Gdiplus::TextRenderingHint::TextRenderingHintAntiAlias);
+	Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
+	Gdiplus::Font gdi_font(hdc, (HFONT)winapi_font);
+	Gdiplus::PointF point;
+
+	Int2 offset(padding, padding);
+	wchar_t wc[4];
+	char c[2];
+	c[1] = 0;
+	for(int i = 32; i <= 255; ++i)
+	{
+		Font::Glyph& glyph = font->glyph[i];
+		if(glyph.width == 0)
+			continue;
+
+		c[0] = (char)i;
+		mbstowcs(wc, c, 4);
+		point.X = (float)offset.x;
+		point.Y = (float)offset.y;
+		graphics.DrawString(wc, 1, &gdi_font, point, &brush);
+
+		offset.x += glyph.width + padding;
+	}
+	
+	C(surface->ReleaseDC(nullptr));
+	surface->Release();
 }

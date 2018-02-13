@@ -81,9 +81,10 @@ Gui::~Gui()
 	delete shader;
 }
 
-Font* Gui::CreateFont(Cstring name, int size)
+Font* Gui::CreateFont(Cstring name, int size, int weight)
 {
-	return font_loader->Create(name, size);
+	assert(size > 0 && weight > 0 && weight <= 10);
+	return font_loader->Load(name, size, weight * 100);
 }
 
 void Gui::Draw()

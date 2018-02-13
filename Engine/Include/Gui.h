@@ -61,7 +61,7 @@ struct Gui : Container
 {
 	Gui(Render* render);
 	~Gui();
-	Font* CreateFont(Cstring name, int size);
+	Font* CreateFont(Cstring name, int size, int weight = 4);
 	void Draw() override;
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size);
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
