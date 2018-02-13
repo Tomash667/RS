@@ -14,6 +14,7 @@
 #include <MeshInstance.h>
 #include <Render.h>
 #include <Gui.h>
+#include <Font.h>
 
 
 Game::Game() : engine(nullptr)
@@ -102,6 +103,13 @@ void Game::OnInit()
 	hp_bar->pos = Int2(0, wnd_size.y - hp_bar->size.y);
 	hp_bar->progress = 0.6f;
 	gui->Add(hp_bar);
+
+	Font* font = gui->CreateFont("Arial", 12);
+	Sprite* s = new Sprite;
+	s->image = font->tex;
+	s->pos = Int2(0, 0);
+	s->size = Int2(4096, 32) * 2;
+	gui->Add(s);
 }
 
 //void Game::LoadResources()

@@ -341,7 +341,7 @@ void Render::BeginScene()
 
 void Render::EndScene()
 {
-	swap_chain->Present(vsync ? 1 : 0, 0);
+	C(swap_chain->Present(vsync ? 1 : 0, 0));
 }
 
 void Render::SetDepthTest(bool enabled)

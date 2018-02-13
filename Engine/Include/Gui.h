@@ -70,5 +70,6 @@ struct Gui : Container
 private:
 	Render* render;
 	GuiShader* shader;
+	FontLoader* font_loader;
 	vector<Control*> controls;
 };

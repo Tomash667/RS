@@ -353,6 +353,20 @@ inline bool IsPow2(T x)
 	return ((x > 0) && ((x & (x - 1)) == 0));
 }
 
+// Round up to next highest power of 2
+template<typename T>
+inline T NextPow2(T x)
+{
+	x--;
+	x |= x >> 1;
+	x |= x >> 2;
+	x |= x >> 4;
+	x |= x >> 8;
+	x |= x >> 16;
+	x++;
+	return x;
+}
+
 // Return float infinity
 inline float Inf()
 {

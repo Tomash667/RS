@@ -1,6 +1,7 @@
 #include "Pch.h"
 #include "Gui.h"
 #include "GuiShader.h"
+#include "FontLoader.h"
 
 
 //=================================================================================================
@@ -68,7 +69,7 @@ void Panel::Draw()
 
 
 //=================================================================================================
-Gui::Gui(Render* render) : render(render), shader(new GuiShader)
+Gui::Gui(Render* render) : render(render), shader(new GuiShader), font_loader(new FontLoader)
 {
 	assert(render);
 	gui = this;
@@ -76,7 +77,13 @@ Gui::Gui(Render* render) : render(render), shader(new GuiShader)
 
 Gui::~Gui()
 {
+	delete font_loader;
 	delete shader;
+}
+
+Font* Gui::CreateFont(Cstring name, int size)
+{
+	return font_loader->Create(name, size);
 }
 
 void Gui::Draw()
@@ -115,4 +122,5 @@ void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, cons
 void Gui::Init()
 {
 	shader->Init(render);
+	font_loader->Init(render);
 }

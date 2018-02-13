@@ -26,6 +26,7 @@ struct ProgressBar;
 struct Sprite;
 
 // internal
+struct FontLoader;
 struct GuiShader;
 struct MeshShader;
 struct QmshLoader;
