@@ -32,20 +32,29 @@ void Scene::Draw()
 
 	shader->ResetParams();
 
-	DrawNodes(nodes);
+	DrawNodes(nodes, nullptr, nullptr);
 }
 
-void Scene::DrawNodes(vector<SceneNode*>& nodes)
+void Scene::DrawNodes(vector<SceneNode*>& nodes, SceneNode* parent, Matrix* parent_matrix)
 {
+	Matrix mat_world;
+
 	for(auto node : nodes)
 	{
 		if(!node->visible)
 			continue;
 
 		mat_world = Matrix::RotationY(node->rot) * Matrix::Translation(node->pos);
+		if(parent)
+		{
+			if(node->attach_point)
+				//mat_world = mat_world * node->attach_point->mat * parent->inst->GetMatrixBones()[node->attach_point->bone];
+				mat_world = node->attach_point->mat * parent->inst->GetMatrixBones()[node->attach_point->bone];
+			mat_world *= *parent_matrix;
+		}
 		mat_combined = mat_world * mat_view_proj;
 
-		if(node->GetMeshInstance())
+		if(node->inst)
 		{
 			node->GetMeshInstance()->SetupBones();
 			shader->SetParams(true);
@@ -61,7 +70,7 @@ void Scene::DrawNodes(vector<SceneNode*>& nodes)
 
 		vector<SceneNode*>& childs = node->GetChildNodes();
 		if(!childs.empty())
-			DrawNodes(childs);
+			DrawNodes(childs, node, &mat_world);
 	}
 }
 

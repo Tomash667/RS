@@ -1,18 +1,21 @@
 #pragma once
 
-struct Mesh;
+#include "Mesh.h"
+
 struct MeshInstance;
 
 struct SceneNode
 {
-	SceneNode(cstring debug_name = nullptr) : mesh(nullptr), inst(nullptr), rot(0.f), visible(true)
+	friend struct Scene;
+
+	SceneNode(cstring debug_name = nullptr) : mesh(nullptr), inst(nullptr), rot(0.f), visible(true), attach_point(nullptr)
 	{
 #ifdef _DEBUG
 		this->debug_name = debug_name;
 #endif
 	}
 	~SceneNode();
-	void AddChild(SceneNode* node);
+	void AddChild(SceneNode* node, Mesh::Point* attach_point = nullptr);
 	void SetMesh(Mesh* mesh);
 	void SetMeshInstance(Mesh* mesh);
 	Mesh* GetMesh() { return mesh; }
@@ -29,4 +32,5 @@ private:
 	Mesh* mesh;
 	MeshInstance* inst;
 	vector<SceneNode*> childs;
+	Mesh::Point* attach_point;
 };

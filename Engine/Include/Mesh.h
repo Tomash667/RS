@@ -135,6 +135,7 @@ struct Mesh final : Resource
 	Animation* GetAnimation(cstring name);
 	Bone* GetBone(cstring name);
 	Point* GetPoint(cstring name);
+	bool HavePoint(Point* point);
 
 	bool IsAnimated() const { return IS_SET(head.flags, F_ANIMATED); }
 

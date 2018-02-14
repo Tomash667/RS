@@ -81,6 +81,8 @@ void GuiShader::SetParams()
 	context->PSSetSamplers(0, 1, &sampler.Get());
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 	context->OMSetBlendState(blend_state, nullptr, 0xFFFFFFFF);
+	context->VSSetConstantBuffers(0, 1, &shader.buffer);
+	context->PSSetConstantBuffers(0, 1, &shader.buffer);
 	SetGlobals(Color::White, true);
 	render->SetDepthTest(false);
 }
@@ -89,15 +91,14 @@ void GuiShader::SetGlobals(Color color, bool force)
 {
 	if(!force && current_color == color)
 		return;
+	auto context = render->GetContext();
 	Vec2 wnd_size = Vec2(render->GetWindow()->GetSize());
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result = context->Map(shader.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	Buffer* buffer = (Buffer*)mappedResource.pData;
 	buffer->color = color;
 	buffer->size = wnd_size;
-	// TODO: require different const buffers !
 	context->Unmap(shader.buffer, 0);
-	context->VSSetConstantBuffers(0, 1, &shader.buffer);
 }
 
 void GuiShader::RestoreParams()

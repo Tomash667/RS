@@ -72,6 +72,17 @@ Mesh::Point* Mesh::GetPoint(cstring name)
 	return nullptr;
 }
 
+bool Mesh::HavePoint(Point* point)
+{
+	assert(point);
+	for(Point& pt : attach_points)
+	{
+		if(&pt == point)
+			return true;
+	}
+	return false;
+}
+
 int Mesh::Animation::GetFrameIndex(float time, bool& hit)
 {
 	assert(time >= 0 && time <= length);

@@ -11,11 +11,11 @@ struct Scene
 	Camera* GetCamera() { return camera; }
 
 private:
-	void DrawNodes(vector<SceneNode*>& nodes);
+	void DrawNodes(vector<SceneNode*>& nodes, SceneNode* parent, Matrix* parent_matrix);
 
 	Render* render;
 	Camera* camera;
 	vector<SceneNode*> nodes;
 	MeshShader* shader;
-	Matrix mat_view_proj, mat_world, mat_combined;
+	Matrix mat_view_proj, mat_combined;
 };
