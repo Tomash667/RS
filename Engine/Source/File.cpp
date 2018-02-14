@@ -33,7 +33,8 @@ bool FileReader::Open(cstring filename)
 
 bool FileReader::Read(void* ptr, uint size)
 {
-	ReadFile(file, ptr, size, &tmp, nullptr);
+	BOOL result = ReadFile(file, ptr, size, &tmp, nullptr);
+	assert(result != FALSE);
 	ok = (size == tmp);
 	return ok;
 }
@@ -42,7 +43,8 @@ void FileReader::ReadToString(string& s)
 {
 	DWORD size = GetFileSize(file, nullptr);
 	s.resize(size);
-	ReadFile(file, (char*)s.c_str(), size, &tmp, nullptr);
+	BOOL result = ReadFile(file, (char*)s.c_str(), size, &tmp, nullptr);
+	assert(result != FALSE);
 	assert(size == tmp);
 }
 

@@ -110,7 +110,7 @@ Font* FontLoader::Load(cstring name, int size, int weight)
 	desc.Height = tex_size.y;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	desc.SampleDesc.Count = 1;
 	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -145,7 +145,7 @@ Font* FontLoader::Load(cstring name, int size, int weight)
 #ifdef _DEBUG
 	font->tex->name = Format("Font %s (%u)", name, size);
 #endif
-	
+
 	// make tab size of 4 spaces
 	Font::Glyph& tab = font->glyph['\t'];
 	Font::Glyph& space = font->glyph[' '];
@@ -179,7 +179,7 @@ void FontLoader::RenderFontToTexture(ID3D11Texture2D* tex, Font* font, void* win
 	C(tex->QueryInterface(__uuidof(IDXGISurface1), (void**)&surface));
 	HDC hdc;
 	C(surface->GetDC(TRUE, &hdc));
-	
+
 	Gdiplus::Graphics graphics(hdc);
 	graphics.SetTextRenderingHint(Gdiplus::TextRenderingHint::TextRenderingHintAntiAlias);
 	Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
@@ -204,7 +204,7 @@ void FontLoader::RenderFontToTexture(ID3D11Texture2D* tex, Font* font, void* win
 
 		offset.x += glyph.width + padding;
 	}
-	
+
 	C(surface->ReleaseDC(nullptr));
 	surface->Release();
 }

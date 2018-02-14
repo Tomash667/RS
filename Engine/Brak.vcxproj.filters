@@ -128,6 +128,9 @@
     <ClInclude Include="Source\FontLoader.h">
       <Filter>Source\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Color.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -195,6 +198,9 @@
     </ClCompile>
     <ClCompile Include="Source\FontLoader.cpp">
       <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Color.cpp">
+      <Filter>Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

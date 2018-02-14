@@ -55,9 +55,12 @@ void ProgressBar::Draw()
 
 
 //=================================================================================================
+Label::Label() : font(nullptr), color(Color::Black)
+{}
+
 void Label::Draw()
 {
-
+	gui->DrawText(text, font, color, 0, Rect::Create(pos, size));
 }
 
 
@@ -104,6 +107,7 @@ void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)
 		{ { float(pos.x + size.x), float(pos.y + size.y), 0.f }, { 1.f, 1.f } },
 		{ { float(pos.x), float(pos.y + size.y), 0.f }, { 0.f, 1.f } },
 	};
+	shader->SetGlobals(Color::White);
 	shader->Draw(image, v, 6);
 }
 
@@ -117,11 +121,20 @@ void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, cons
 		{ { float(pos.x + part.x * size.x), float(pos.y + part.y * size.y), 0.f }, { part.x, part.y } },
 		{ { float(pos.x), float(pos.y + part.y * size.y), 0.f }, { 0.f, part.y } },
 	};
+	shader->SetGlobals(Color::White);
 	shader->Draw(image, v, 6);
+}
+
+void Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect)
+{
+	if(!font)
+		font = default_font;
+	shader->SetGlobals(color);
 }
 
 void Gui::Init()
 {
 	shader->Init(render);
 	font_loader->Init(render);
+	default_font = CreateFont("Arial", 14);
 }

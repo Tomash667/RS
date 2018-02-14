@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Include\Brak.h" />
     <ClInclude Include="Include\Camera.h" />
+    <ClInclude Include="Include\Color.h" />
     <ClInclude Include="Include\Containers.h" />
     <ClInclude Include="Include\Core.h" />
     <ClInclude Include="Include\CoreMath.h" />
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClCompile Include="Include\WICTextureLoader.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\Color.cpp" />
     <ClCompile Include="Source\CoreMath.cpp" />
     <ClCompile Include="Source\Engine.cpp" />
     <ClCompile Include="Source\File.cpp" />

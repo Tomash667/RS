@@ -28,6 +28,7 @@ using std::max;
 
 #include "Core.h"
 #include "CoreMath.h"
+#include "Color.h"
 #include "Containers.h"
 #include "Text.h"
 #include "File.h"

@@ -110,6 +110,14 @@ void Game::OnInit()
 	s->pos = Int2(0, 0);
 	s->size = Int2(4096, 32) * 2;
 	gui->Add(s);
+
+
+
+	Label* label = new Label;
+	label->text = "Test";
+	label->pos = Int2(0, 0);
+	label->size = Int2(200, 100);
+	gui->Add(label);
 }
 
 //void Game::LoadResources()

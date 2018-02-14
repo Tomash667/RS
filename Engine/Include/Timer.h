@@ -16,7 +16,5 @@ public:
 private:
 	double ticks_per_sec;
 	int64 last_time;
-	float old_time;
-	bool use_hpc;
 	bool started;
 };

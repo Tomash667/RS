@@ -1,6 +1,7 @@
 #pragma once
 
 #undef CreateFont
+#undef DrawText
 #undef RegisterClass
 
 #ifdef _DEBUG

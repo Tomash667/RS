@@ -1,5 +1,6 @@
 cbuffer globals
 {
+	float4 color;
 	float2 size;
 };
 
@@ -31,5 +32,5 @@ SamplerState TexSampler;
 
 float4 ps_main(VS_OUTPUT In) : SV_TARGET
 {
-	return tex.Sample(TexSampler, In.tex);
+	return tex.Sample(TexSampler, In.tex) * color;
 }

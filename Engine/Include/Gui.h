@@ -45,9 +45,12 @@ struct ProgressBar : Control
 //-----------------------------------------------------------------------------
 struct Label : Control
 {
+	Label();
 	void Draw() override;
 
 	string text;
+	Font* font;
+	Color color;
 };
 
 //-----------------------------------------------------------------------------
@@ -59,12 +62,23 @@ struct Panel : Container
 //-----------------------------------------------------------------------------
 struct Gui : Container
 {
+	enum DrawTextFlags
+	{
+		Left = 0,
+		Center = 1,
+		Right = 2,
+		Top = 0,
+		VCenter = 4,
+		Bottom = 8
+	};
+
 	Gui(Render* render);
 	~Gui();
 	Font* CreateFont(Cstring name, int size, int weight = 4);
 	void Draw() override;
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size);
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
+	void DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect);
 	void Init();
 
 private:
@@ -72,4 +86,5 @@ private:
 	GuiShader* shader;
 	FontLoader* font_loader;
 	vector<Control*> controls;
+	Font* default_font;
 };

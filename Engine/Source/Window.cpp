@@ -191,6 +191,8 @@ IntPointer Window::ProcessMouseButton(IntPointer wParam)
 	// translate msg to key
 	switch(wParam)
 	{
+	default:
+		assert(0);
 	case WM_LBUTTONDOWN:
 		result = 0;
 		key = Key::LeftButton;
