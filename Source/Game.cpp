@@ -107,7 +107,7 @@ void Game::OnInit()
 	gui->Add(hp_bar);
 	
 	Label* label = new Label;
-	label->text = "Test";
+	label->text = "Testowy tekst";
 	label->pos = Int2(0, 0);
 	label->size = Int2(200, 100);
 	gui->Add(label);

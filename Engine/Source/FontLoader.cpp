@@ -175,6 +175,7 @@ void FontLoader::RenderFontToTexture(ID3D11Texture2D* tex, Font* font, void* win
 	Gdiplus::SolidBrush brush(Gdiplus::Color(255, 255, 255, 255));
 	Gdiplus::Font gdi_font(hdc, (HFONT)winapi_font);
 	Gdiplus::PointF point;
+	const Gdiplus::StringFormat* format = Gdiplus::StringFormat::GenericTypographic();
 
 	Int2 offset(padding, padding);
 	wchar_t wc[4];
@@ -190,7 +191,7 @@ void FontLoader::RenderFontToTexture(ID3D11Texture2D* tex, Font* font, void* win
 		mbstowcs(wc, c, 4);
 		point.X = (float)offset.x;
 		point.Y = (float)offset.y;
-		graphics.DrawString(wc, 1, &gdi_font, point, &brush);
+		graphics.DrawString(wc, 1, &gdi_font, point, format, &brush);
 
 		offset.x += glyph.width + padding;
 	}
