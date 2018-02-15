@@ -18,7 +18,8 @@
 
 
 Game::Game() : engine(nullptr)
-{}
+{
+}
 
 Game::~Game()
 {

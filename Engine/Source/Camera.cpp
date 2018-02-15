@@ -4,7 +4,8 @@
 
 Camera::Camera() : mode(STATIC), from(0, 2, -2), vfrom(from), to(0, 0, 0), vto(to), up(0, 1, 0), rot(0, 4.2875104f), vrot(rot), springiness(40.f), dist(2.f),
 target_h(1.5f), shift(0.f), reset(true), target(nullptr)
-{}
+{
+}
 
 void Camera::Update(float dt)
 {

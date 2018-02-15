@@ -16,7 +16,8 @@ struct Item
 
 	Item(cstring id, cstring name, cstring mesh_id, cstring tex_id, ITEM_TYPE type) : id(id), name(name), mesh_id(mesh_id), tex_id(tex_id), type(type), mesh(nullptr),
 		tex(nullptr)
-	{}
+	{
+	}
 
 	static vector<Item> items;
 };

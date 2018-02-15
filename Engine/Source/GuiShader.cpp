@@ -4,8 +4,9 @@
 #include "Window.h"
 #include "Texture.h"
 
-GuiShader::GuiShader() : render(nullptr)
-{}
+GuiShader::GuiShader() : render(nullptr), locked_data(nullptr)
+{
+}
 
 void GuiShader::Init(Render* render)
 {
@@ -14,12 +15,13 @@ void GuiShader::Init(Render* render)
 
 	// create shader
 	D3D11_INPUT_ELEMENT_DESC desc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	render->CreateShader(shader, "gui.hlsl", desc, countof(desc), sizeof(Buffer));
-	shader.vertex_size = sizeof(Vertex);
+	shader.vertex_size = sizeof(VertexPosTexColor);
 
 	// create texture sampler
 	D3D11_SAMPLER_DESC sampler_desc;
@@ -44,7 +46,7 @@ void GuiShader::Init(Render* render)
 	// create vertex buffer
 	D3D11_BUFFER_DESC v_desc;
 	v_desc.Usage = D3D11_USAGE_DYNAMIC;
-	v_desc.ByteWidth = MaxVertex * sizeof(Vertex);
+	v_desc.ByteWidth = MaxQuads * sizeof(VertexPosTexColor) * 6;
 	v_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	v_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	v_desc.MiscFlags = 0;
@@ -82,21 +84,11 @@ void GuiShader::SetParams()
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 	context->OMSetBlendState(blend_state, nullptr, 0xFFFFFFFF);
 	context->VSSetConstantBuffers(0, 1, &shader.buffer);
-	context->PSSetConstantBuffers(0, 1, &shader.buffer);
-	SetGlobals(Color::White, true);
 	render->SetDepthTest(false);
-}
-
-void GuiShader::SetGlobals(Color color, bool force)
-{
-	if(!force && current_color == color)
-		return;
-	auto context = render->GetContext();
 	Vec2 wnd_size = Vec2(render->GetWindow()->GetSize());
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result = context->Map(shader.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	Buffer* buffer = (Buffer*)mappedResource.pData;
-	buffer->color = color;
 	buffer->size = wnd_size;
 	context->Unmap(shader.buffer, 0);
 }
@@ -107,19 +99,27 @@ void GuiShader::RestoreParams()
 	render->SetDepthTest(true);
 }
 
-void GuiShader::Draw(Texture* tex, Vertex* v, uint count)
+VertexPosTexColor* GuiShader::Lock()
 {
-	assert(tex && v && count > 0 && count <= MaxVertex);
-	auto context = render->GetContext();
-
-	// copy vertex data
+	assert(!locked_data);
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = context->Map(vb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, v, sizeof(Vertex) * count);
-	context->Unmap(vb, 0);
+	C(render->GetContext()->Map(vb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+	locked_data = (VertexPosTexColor*)mappedResource.pData;
+	return locked_data;
+}
 
-	// set vertex buffer
-	uint stride = sizeof(Vertex),
+void GuiShader::Draw(Texture* tex, uint count)
+{
+	assert(tex && locked_data && count <= MaxQuads * 6);
+
+	auto context = render->GetContext();
+	context->Unmap(vb, 0);
+	locked_data = nullptr;
+
+	if(count == 0)
+		return;
+
+	uint stride = sizeof(VertexPosTexColor),
 		offset = 0;
 	context->IASetVertexBuffers(0, 1, &vb.Get(), &stride, &offset);
 

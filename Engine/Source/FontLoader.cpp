@@ -6,19 +6,9 @@
 #include <gdiplus.h>
 
 
-//=================================================================================================
-Font::Font() : tex(nullptr)
-{}
-
-Font::~Font()
-{
-	delete tex;
-}
-
-
-//=================================================================================================
 FontLoader::FontLoader() : render(nullptr), gdi_initialized(false)
-{}
+{
+}
 
 FontLoader::~FontLoader()
 {

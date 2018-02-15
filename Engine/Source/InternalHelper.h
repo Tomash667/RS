@@ -2,6 +2,7 @@
 
 #undef CreateFont
 #undef DrawText
+#undef GetCharWidth
 #undef RegisterClass
 
 #ifdef _DEBUG

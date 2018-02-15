@@ -6,7 +6,8 @@ struct Object
 	Mesh* mesh;
 
 	Object(cstring id, cstring mesh_id) : id(id), mesh_id(mesh_id), mesh(nullptr)
-	{}
+	{
+	}
 
 	static vector<Object> objects;
 };

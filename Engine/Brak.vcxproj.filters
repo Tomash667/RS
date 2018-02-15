@@ -131,6 +131,9 @@
     <ClInclude Include="Include\Color.h">
       <Filter>Include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Vertex.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -201,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="Source\Color.cpp">
       <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Font.cpp">
+      <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
