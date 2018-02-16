@@ -12,5 +12,5 @@ struct UnitEntity
 	Unit* data;
 	UnitItem weapon;
 	vector<UnitItem> items;
-	int hp;
+	float hp, hpmax;
 };

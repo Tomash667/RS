@@ -11,6 +11,7 @@ struct Engine : WindowHandler
 	void Shutdown();
 	void ShowError(cstring msg);
 
+	float GetFps() { return fps; }
 	Gui* GetGui() { return gui; }
 	InputManager* GetInput() { return input; }
 	Render* GetRender() { return render; }

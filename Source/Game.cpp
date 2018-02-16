@@ -15,6 +15,7 @@
 #include <Render.h>
 #include <Gui.h>
 #include <Font.h>
+#include "Player.h"
 
 
 Game::Game() : engine(nullptr)
@@ -51,25 +52,24 @@ void Game::OnInit()
 
 	Mesh* mesh = res_mgr->GetMesh("human.qmsh");
 
-	player = new SceneNode("player");
-	player->SetMeshInstance(mesh);
-	player->pos = Vec3(0, 0, 0);
-	player->rot = PI;
-	scene->Add(player);
-
-	moving = false;
-	player->GetMeshInstance()->Play("stoi", 0, 0);
+	player = new Player;
+	player->node = new SceneNode("player");
+	player->node->SetMeshInstance(mesh);
+	player->node->GetMeshInstance()->Play("stoi", 0, 0);
+	player->node->pos = Vec3(0, 0, 0);
+	player->node->rot = PI;
+	scene->Add(player->node);
 
 	SceneNode* gun = new SceneNode("gun");
 	gun->SetMeshInstance(res_mgr->GetMesh("m1911.qmsh"));
 	//gun->SetMesh(res_mgr->GetMesh("marker.qmsh"));
 	gun->pos = Vec3(0, 0, 0);
 	gun->rot = 0;
-	player->AddChild(gun, player->GetMeshInstance()->GetMesh()->GetPoint("bron"));
+	player->node->AddChild(gun, player->node->GetMesh()->GetPoint("bron"));
 
 	camera = scene->GetCamera();
 	camera->mode = Camera::THIRD_PERSON;
-	camera->target = player;
+	camera->target = player->node;
 	camera->dist = 2.f;
 	camera->shift = 0.4f;
 	camera->target_h = 1.5f;
@@ -105,12 +105,17 @@ void Game::OnInit()
 	hp_bar->pos = Int2(0, wnd_size.y - hp_bar->size.y);
 	hp_bar->progress = 0.6f;
 	gui->Add(hp_bar);
-	
-	Label* label = new Label;
-	label->text = "Testowy tekst";
-	label->pos = Int2(0, 0);
-	label->size = Int2(200, 100);
-	gui->Add(label);
+
+	label = new Label;
+
+	Panel* panel = new Panel;
+	panel->Add(label);
+	panel->image = res_mgr->GetTexture("panel.png");
+	panel->image_size = 32;
+	panel->corner_size = 12;
+	panel->size = Int2(32, 32);
+	panel->Setup();
+	gui->Add(panel);
 }
 
 //void Game::LoadResources()
@@ -221,41 +226,40 @@ void Game::OnUpdate(float dt)
 			break;
 		}
 
-		if(player->GetMeshInstance()->GetGroup(0).GetAnimation()->name == "biegnie")
-			speed *= player->GetMeshInstance()->GetGroup(0).GetBlendT();
+		if(player->node->GetMeshInstance()->GetGroup(0).GetAnimation()->name == "biegnie")
+			speed *= player->node->GetMeshInstance()->GetGroup(0).GetBlendT();
 		else
 			speed = 0.f;
 		speed *= dt;
 
-		d += player->rot - PI / 2;
-		player->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
+		d += player->node->rot - PI / 2;
+		player->node->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
 
-		if(!moving)
+		if(!player->moving)
 		{
-			player->GetMeshInstance()->Play("biegnie", 0, 0);
-			moving = true;
+			player->node->GetMeshInstance()->Play("biegnie", 0, 0);
+			player->moving = true;
 		}
 	}
 	else
 	{
-		if(moving)
+		if(player->moving)
 		{
-			player->GetMeshInstance()->Play("stoi", 0, 0);
-			moving = false;
+			player->node->GetMeshInstance()->Play("stoi", 0, 0);
+			player->moving = false;
 		}
 	}
 
 	auto& mouse_dif = input->GetMouseMove();
-	player->rot = Clip(player->rot + float(mouse_dif.x) / 800);
+	player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
 
-	player->GetMeshInstance()->Update(dt);
+	player->node->GetMeshInstance()->Update(dt);
 
 	// update camera
 	const Vec2 c_cam_angle = Vec2(PI + 0.1f, PI * 1.8f - 0.1f);
-	camera->rot.x = player->rot;
+	camera->rot.x = player->node->rot;
 	camera->rot.y = c_cam_angle.Clamp(camera->rot.y - float(mouse_dif.y) / 400);
 	camera->Update(dt);
 
-	// TODO: remove
-	engine->GetWindow()->SetTitle(Format("X:%g; Z:%g; R:%g", player->pos.x, player->pos.z, Clip(player->rot + PI / 2)));
+	label->SetText("Fps: %g\nPos: %g, %g\nRot: %g", engine->GetFps(), player->node->pos.x, player->node->pos.z, Clip(player->node->rot + PI / 2));
 }

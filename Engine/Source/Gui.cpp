@@ -58,7 +58,7 @@ void ProgressBar::Draw()
 
 
 //=================================================================================================
-Label::Label() : font(nullptr), color(Color::Black)
+Label::Label() : font(nullptr), color(Color::Black), flags(Font::Left)
 {
 }
 
@@ -69,9 +69,35 @@ void Label::Draw()
 
 
 //=================================================================================================
+Panel::Panel() : image(nullptr), image_size(0), corner_size(0), pos_grid(4), uv_grid(4)
+{
+}
+
 void Panel::Draw()
 {
+	/*assert(image
+		&& image_size > 0
+		&& corner_size > 0
+		&& image_size - corner_size * 2 > 0
+		&& size.x >= corner_size * 2
+		&& size.y >= corner_size * 2);
 
+	UvGrid g({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
+	UvGrid g2({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
+		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
+	gui->DrawSpriteGrid(image, color, g, g2);*/
+}
+
+void Panel::Setup()
+{
+	assert(image_size > 0
+		&& corner_size > 0
+		&& image_size - corner_size * 2 > 0
+		&& size.x >= corner_size * 2
+		&& size.y >= corner_size * 2);
+	uv_grid.Set({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
+	pos_grid.Set({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
+		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
 }
 
 
@@ -135,7 +161,7 @@ bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect&
 
 	uint line_begin, line_end, line_index = 0;
 	int line_width, width = rect.SizeX();
-	uint text_end = strlen(text);
+	uint text_end = (uint)strlen(text);
 	Vec4 current_color = color;
 	bool bottom_clip = false;
 
@@ -147,7 +173,7 @@ bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect&
 
 	int y;
 	if(IS_SET(flags, Font::Bottom))
-		y = rect.Bottom() - lines.size()*font->height;
+		y = rect.Bottom() - int(lines.size())*font->height;
 	if(IS_SET(flags, Font::VCenter))
 		y = rect.Top() + (rect.SizeY() - int(lines.size())*font->height) / 2;
 	else

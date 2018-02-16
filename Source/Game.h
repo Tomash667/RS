@@ -2,15 +2,13 @@
 
 #include <GameHandler.h>
 
-struct PlayerController;
-struct AIController;
-struct Unit;
+struct Player;
 
-enum GameState
-{
-	GS_MAIN_MENU,
-	GS_GAME
-};
+//enum GameState
+//{
+//	GS_MAIN_MENU,
+//	GS_GAME
+//};
 
 struct Game : GameHandler
 {
@@ -31,6 +29,6 @@ struct Game : GameHandler
 
 	Engine* engine;
 	Camera* camera;
-	SceneNode* player;
-	bool moving;
+	Player* player;
+	Label* label;
 };
