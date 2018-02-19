@@ -107,6 +107,7 @@ void Game::OnInit()
 	gui->Add(hp_bar);
 
 	label = new Label;
+	label->auto_size = AutoSize::Grow;
 
 	Panel* panel = new Panel;
 	panel->Add(label);

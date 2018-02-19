@@ -488,6 +488,7 @@ struct Int2
 
 	// Constants
 	static const Int2 Zero;
+	static const Int2 MaxValue;
 };
 
 //-----------------------------------------------------------------------------
@@ -1273,6 +1274,55 @@ struct Plane : public XMFLOAT4
 	static Plane Transform(const Plane& plane, const Matrix& M);
 	static void Transform(const Plane& plane, const Quat& rotation, Plane& result);
 	static Plane Transform(const Plane& plane, const Quat& rotation);
+};
+
+//-----------------------------------------------------------------------------
+template<typename Type, typename PackedType>
+struct Grid
+{
+	Grid(uint size) : size(size)
+	{
+		values.resize(size * 2);
+	}
+
+	template<typename T>
+	void Set(std::initializer_list<T> const& new_values)
+	{
+		assert(size == new_values.size());
+		uint i = 0;
+		for(T val : new_values)
+		{
+			values[i] = (Type)val;
+			values[size + i] = (Type)val;
+			++i;
+		}
+	}
+
+	template<typename T>
+	void Set(std::initializer_list<T> const& new_x, std::initializer_list<T> const& new_y)
+	{
+		assert(size == new_x.size() && size == new_y.size());
+		uint i = 0;
+		for(T val : new_x)
+		{
+			values[i] = (Type)val;
+			++i;
+		}
+		i = 0;
+		for(T val : new_y)
+		{
+			values[size + i] = (Type)val;
+			++i;
+		}
+	}
+
+	PackedType operator () (int x, int y)
+	{
+		return PackedType(values[x], values[size + y]);
+	}
+
+	vector<Type> values;
+	uint size;
 };
 
 #include "CoreMath.inl"

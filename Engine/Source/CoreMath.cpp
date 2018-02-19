@@ -1,6 +1,7 @@
 #include "Pch.h"
 
 const Int2 Int2::Zero = { 0,0 };
+const Int2 Int2::MaxValue = { std::numeric_limits<int>::max(), std::numeric_limits<int>::max() };
 
 const Rect Rect::Zero = { 0,0,0,0 };
 

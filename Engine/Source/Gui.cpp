@@ -15,13 +15,14 @@ void Container::Add(Control* control)
 {
 	assert(control);
 	control->gui = gui;
+	control->parent = this;
 	controls.push_back(control);
 }
 
 void Container::Draw()
 {
 	for(Control* ctrl : controls)
-		ctrl->Draw();
+		ctrl->OnDraw();
 }
 
 void Container::Update(float dt)
@@ -39,7 +40,7 @@ Sprite::Sprite() : image(nullptr)
 void Sprite::Draw()
 {
 	assert(image);
-	gui->DrawSprite(image, pos, size);
+	gui->DrawSprite(image, Int2::Zero, size);
 }
 
 
@@ -51,20 +52,31 @@ ProgressBar::ProgressBar() : progress(1.f), image_front(nullptr), image_back(nul
 void ProgressBar::Draw()
 {
 	assert(image_front && image_back);
-	gui->DrawSprite(image_back, pos, size);
+	gui->DrawSprite(image_back, Int2::Zero, size);
 	if(progress > 0.f)
-		gui->DrawSpritePart(image_front, pos, size, Vec2(progress, 1.f));
+		gui->DrawSpritePart(image_front, Int2::Zero, size, Vec2(progress, 1.f));
 }
 
 
 //=================================================================================================
-Label::Label() : font(nullptr), color(Color::Black), flags(Font::Left)
+Label::Label() : font(nullptr), color(Color::Black), flags(Font::Left), auto_size(AutoSize::Auto)
 {
 }
 
 void Label::Draw()
 {
-	gui->DrawText(text, font, color, 0, Rect::Create(pos, size));
+	gui->DrawText(text, font, color, 0, Rect::Create(Int2::Zero, size));
+}
+
+void Label::SetText(Cstring text)
+{
+	Font* font = GetUsedFont();
+	font->CalculateSize()
+}
+
+Font* Label::GetUsedFont()
+{
+	return font ? font : gui->GetDefaultFont();
 }
 
 
@@ -129,40 +141,56 @@ Font* Gui::CreateFont(Cstring name, int size, int weight)
 
 void Gui::Draw()
 {
+	current = this;
+	offset = Int2(0, 0);
 	shader->SetParams();
 	Container::Draw();
 	shader->RestoreParams();
 }
 
-struct VertexHelper
+void Gui::Draw(Control* control)
 {
-	Box2d pos, tex;
-	Vec4 color;
-};
+	assert(control);
+	Control* prev = current;
+	current = control;
+	offset += current->pos;
+	current->Draw();
+	offset -= current->pos;
+	current = prev;
+}
 
 void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)
 {
 	Lock();
-	FillQuad(Box2d::Create(pos, size), Box2d(0.f, 0.f, 1.f, 1.f), Color::White);
+	FillQuad(Box2d::Create(offset + pos, size), Box2d(0.f, 0.f, 1.f, 1.f), Color::White);
 	Flush(image);
 }
 
 void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part)
 {
 	Lock();
-	FillQuad(Box2d::Create(pos, size * part), Box2d(Vec2::Zero, part), Color::White);
+	FillQuad(Box2d::Create(offset + pos, size * part), Box2d(Vec2::Zero, part), Color::White);
 	Flush(image);
 }
 
-bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect, const Rect* clip)
+bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& in_rect, const Rect* in_clip)
 {
 	if(!font)
 		font = default_font;
 
+	// !TODO!
 	uint line_begin, line_end, line_index = 0;
 	int line_width, width = rect.SizeX();
 	uint text_end = (uint)strlen(text);
 	Vec4 current_color = color;
+	Rect rect = in_rect + offset;
+	Rect clip_rect;
+	Rect* clip = nullptr;
+	if(in_clip)
+	{
+		clip_rect = *in_clip + offset;
+		clip = &clip_rect;
+	}
 	bool bottom_clip = false;
 
 	Lock();
@@ -206,6 +234,17 @@ bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect&
 
 	Flush(font->tex);
 	return !bottom_clip;
+}
+
+void Gui::SplitTextLines(cstring text)
+{
+	uint line_begin, line_end, line_index = 0;
+	int line_width, width = rect.SizeX();
+	uint text_end = (uint)strlen(text);
+
+	lines.clear();
+	while(font->SplitLine(line_begin, line_end, line_width, line_index, text, text_end, flags, width))
+		lines.push_back(TextLine(line_begin, line_end, line_width));
 }
 
 void Gui::DrawTextLine(Font* font, cstring text, uint line_begin, uint line_end, const Vec4& color, int x, int y, const Rect* clip)

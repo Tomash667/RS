@@ -3,39 +3,38 @@
 #include "Vertex.h"
 
 //-----------------------------------------------------------------------------
+enum class AutoSize
+{
+	Manual = 0,
+	Grow = 1,
+	Shrink = 2,
+	Auto = 3
+};
+
+//-----------------------------------------------------------------------------
 struct Control
 {
-	enum SizeMode
-	{
-		Manual = 0,
-		GrowX = 1,
-		GrowY = 2,
-		Grow = GrowX | GrowY,
-		ShrinkX = 4,
-		ShrinkY = 8,
-		Shrink = ShrinkX | ShrinkY,
-		Auto = Grow | Shrink
-	};
-
-	Control() : pos(0, 0), size(0, 0), offset(0, 0), gui(nullptr), parent(nullptr), size_mode(Auto) {}
+	Control() : pos(Int2::Zero), size(Int2::Zero), min_size(Int2::Zero), max_size(Int2::MaxValue), gui(nullptr), parent(nullptr) {}
 	virtual ~Control() {}
 	virtual void Draw() {}
 	virtual void Update(float dt) {}
+	void OnDraw();
 
-	Int2 pos, size, offset;
+	Int2 pos, size, min_size, max_size;
 	Gui* gui;
-	SizeMode size_mode;
 	Container* parent;
 };
 
 //-----------------------------------------------------------------------------
 struct Container : Control
 {
+	Container() : auto_size(AutoSize::Auto) {}
 	~Container();
 	void Add(Control* control);
 	void Draw() override;
 	void Update(float dt) override;
 
+	AutoSize auto_size;
 private:
 	vector<Control*> controls;
 };
@@ -65,65 +64,13 @@ struct Label : Control
 	Label();
 	void Draw() override;
 	void SetText(Cstring text);
-	template<typename... Args>
-	void SetText(Cstring msg, const Args&... args)
-	{
-		SetText(Format(msg, args...));
-	}
-	const string& GetText() const { return text; }
+	Font* GetUsedFont();
 
 	string text;
-	Font* font;
 	Color color;
 	int flags;
-};
-
-template<typename Type, typename PackedType>
-struct Grid
-{
-	Grid(uint size) : size(size)
-	{
-		values.resize(size * 2);
-	}
-
-	template<typename T>
-	void Set(std::initializer_list<T> const& new_values)
-	{
-		assert(size == new_values.size());
-		uint i = 0;
-		for(T val : new_values)
-		{
-			values[i] = (Type)val;
-			values[size + i] = (Type)val;
-			++i;
-		}
-	}
-
-	template<typename T>
-	void Set(std::initializer_list<T> const& new_x, std::initializer_list<T> const& new_y)
-	{
-		assert(size == new_x.size() && size == new_y.size());
-		uint i = 0;
-		for(T val : new_x)
-		{
-			values[i] = (Type)val;
-			++i;
-		}
-		i = 0;
-		for(T val : new_y)
-		{
-			values[size + i] = (Type)val;
-			++i;
-		}
-	}
-
-	PackedType operator () (int x, int y)
-	{
-		return PackedType(values[x], values[size + y]);
-	}
-
-	vector<Type> values;
-	uint size;
+	Font* font;
+	AutoSize auto_size;
 };
 
 //-----------------------------------------------------------------------------
@@ -148,9 +95,12 @@ struct Gui : Container
 	void Init();
 	void Draw() override;
 
+	void Draw(Control* control);
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size);
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
 	bool DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect, const Rect* clip = nullptr);
+
+	Font* GetDefaultFont() { return default_font; }
 
 private:
 	enum ClipResult
@@ -178,13 +128,21 @@ private:
 	void Lock();
 	void Flush(Texture* tex, bool lock = false);
 	void FillQuad(const Box2d& pos, const Box2d& tex, const Vec4& color);
+	void SplitTextLines(cstring text);
 
 	Render* render;
 	GuiShader* shader;
 	FontLoader* font_loader;
-	vector<Control*> controls;
 	Font* default_font;
 	VertexPosTexColor* v;
 	uint in_buffer;
 	vector<TextLine> lines;
+	Control* current;
+	Int2 offset;
 };
+
+
+inline void Control::OnDraw()
+{
+	gui->Draw(this);
+}
