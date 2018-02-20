@@ -1316,13 +1316,16 @@ struct Grid
 		}
 	}
 
-	PackedType operator () (int x, int y)
+	PackedType operator () (uint x, uint y) const
 	{
+		assert(x < size && y < size);
 		return PackedType(values[x], values[size + y]);
 	}
 
 	vector<Type> values;
 	uint size;
 };
+
+typedef Grid<float, Vec2> GridF;
 
 #include "CoreMath.inl"

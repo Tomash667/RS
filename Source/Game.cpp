@@ -107,9 +107,10 @@ void Game::OnInit()
 	gui->Add(hp_bar);
 
 	label = new Label;
-	label->auto_size = AutoSize::Grow;
+	label->pos = Int2(6, 6);
+	label->color = Color::Black;
 
-	Panel* panel = new Panel;
+	panel = new Panel;
 	panel->Add(label);
 	panel->image = res_mgr->GetTexture("panel.png");
 	panel->image_size = 32;
@@ -262,5 +263,19 @@ void Game::OnUpdate(float dt)
 	camera->rot.y = c_cam_angle.Clamp(camera->rot.y - float(mouse_dif.y) / 400);
 	camera->Update(dt);
 
-	label->SetText("Fps: %g\nPos: %g, %g\nRot: %g", engine->GetFps(), player->node->pos.x, player->node->pos.z, Clip(player->node->rot + PI / 2));
+	// update gui
+	if(input->Pressed(Key::F1))
+		panel->visible = !panel->visible;
+	if(panel->visible)
+	{
+		label->text = Format("Fps: %g\nPos: %g, %g\nRot: %g", FLT10(engine->GetFps()), FLT10(player->node->pos.x), FLT10(player->node->pos.z),
+			FLT100(Clip(player->node->rot + PI / 2)));
+		label->CalculateSize();
+		Int2 new_size = Int2::Max(label->size + Int2(12, 12), panel->size);
+		if(new_size != panel->size)
+		{
+			panel->size = new_size;
+			panel->Setup();
+		}
+	}
 }

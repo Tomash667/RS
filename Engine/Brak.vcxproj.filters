@@ -134,6 +134,9 @@
     <ClInclude Include="Include\Vertex.h">
       <Filter>Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\GuiControls.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -206,6 +209,9 @@
       <Filter>Source\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Font.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Include\GuiControls.cpp">
       <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>

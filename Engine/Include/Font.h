@@ -30,4 +30,5 @@ struct Font
 	{
 		return glyph[(byte)c].width;
 	}
+	Int2 CalculateSize(Cstring text, int limit_width = std::numeric_limits<int>::max()) const;
 };

@@ -5,115 +5,6 @@
 #include "Font.h"
 
 
-//=================================================================================================
-Container::~Container()
-{
-	DeleteElements(controls);
-}
-
-void Container::Add(Control* control)
-{
-	assert(control);
-	control->gui = gui;
-	control->parent = this;
-	controls.push_back(control);
-}
-
-void Container::Draw()
-{
-	for(Control* ctrl : controls)
-		ctrl->OnDraw();
-}
-
-void Container::Update(float dt)
-{
-	for(Control* ctrl : controls)
-		ctrl->Update(dt);
-}
-
-
-//=================================================================================================
-Sprite::Sprite() : image(nullptr)
-{
-}
-
-void Sprite::Draw()
-{
-	assert(image);
-	gui->DrawSprite(image, Int2::Zero, size);
-}
-
-
-//=================================================================================================
-ProgressBar::ProgressBar() : progress(1.f), image_front(nullptr), image_back(nullptr)
-{
-}
-
-void ProgressBar::Draw()
-{
-	assert(image_front && image_back);
-	gui->DrawSprite(image_back, Int2::Zero, size);
-	if(progress > 0.f)
-		gui->DrawSpritePart(image_front, Int2::Zero, size, Vec2(progress, 1.f));
-}
-
-
-//=================================================================================================
-Label::Label() : font(nullptr), color(Color::Black), flags(Font::Left), auto_size(AutoSize::Auto)
-{
-}
-
-void Label::Draw()
-{
-	gui->DrawText(text, font, color, 0, Rect::Create(Int2::Zero, size));
-}
-
-void Label::SetText(Cstring text)
-{
-	Font* font = GetUsedFont();
-	font->CalculateSize()
-}
-
-Font* Label::GetUsedFont()
-{
-	return font ? font : gui->GetDefaultFont();
-}
-
-
-//=================================================================================================
-Panel::Panel() : image(nullptr), image_size(0), corner_size(0), pos_grid(4), uv_grid(4)
-{
-}
-
-void Panel::Draw()
-{
-	/*assert(image
-		&& image_size > 0
-		&& corner_size > 0
-		&& image_size - corner_size * 2 > 0
-		&& size.x >= corner_size * 2
-		&& size.y >= corner_size * 2);
-
-	UvGrid g({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
-	UvGrid g2({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
-		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
-	gui->DrawSpriteGrid(image, color, g, g2);*/
-}
-
-void Panel::Setup()
-{
-	assert(image_size > 0
-		&& corner_size > 0
-		&& image_size - corner_size * 2 > 0
-		&& size.x >= corner_size * 2
-		&& size.y >= corner_size * 2);
-	uv_grid.Set({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
-	pos_grid.Set({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
-		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
-}
-
-
-//=================================================================================================
 Gui::Gui(Render* render) : render(render), shader(new GuiShader), font_loader(new FontLoader), v(nullptr)
 {
 	assert(render);
@@ -141,63 +32,81 @@ Font* Gui::CreateFont(Cstring name, int size, int weight)
 
 void Gui::Draw()
 {
-	current = this;
-	offset = Int2(0, 0);
 	shader->SetParams();
 	Container::Draw();
 	shader->RestoreParams();
 }
 
-void Gui::Draw(Control* control)
-{
-	assert(control);
-	Control* prev = current;
-	current = control;
-	offset += current->pos;
-	current->Draw();
-	offset -= current->pos;
-	current = prev;
-}
-
 void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)
 {
 	Lock();
-	FillQuad(Box2d::Create(offset + pos, size), Box2d(0.f, 0.f, 1.f, 1.f), Color::White);
+	FillQuad(Box2d::Create(pos, size), Box2d(0.f, 0.f, 1.f, 1.f), Color::White);
 	Flush(image);
 }
 
 void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part)
 {
 	Lock();
-	FillQuad(Box2d::Create(offset + pos, size * part), Box2d(Vec2::Zero, part), Color::White);
+	FillQuad(Box2d::Create(pos, size * part), Box2d(Vec2::Zero, part), Color::White);
 	Flush(image);
 }
 
-bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& in_rect, const Rect* in_clip)
+void Gui::DrawSpriteGrid(Texture* image, Color color, const GridF& pos, const GridF& uv)
+{
+	assert(pos.size == uv.size);
+	Lock();
+	Vec4 current_color = color;
+	for(uint y = 0; y < pos.size - 1; ++y)
+	{
+		for(uint x = 0; x < pos.size - 1; ++x)
+		{
+			v->pos = pos(x, y);
+			v->tex = uv(x, y);
+			v->color = current_color;
+			++v;
+
+			v->pos = pos(x + 1, y);
+			v->tex = uv(x + 1, y);
+			v->color = current_color;
+			++v;
+
+			v->pos = pos(x, y + 1);
+			v->tex = uv(x, y + 1);
+			v->color = current_color;
+			++v;
+
+			v->pos = pos(x + 1, y);
+			v->tex = uv(x + 1, y);
+			v->color = current_color;
+			++v;
+
+			v->pos = pos(x + 1, y + 1);
+			v->tex = uv(x + 1, y + 1);
+			v->color = current_color;
+			++v;
+
+			v->pos = pos(x, y + 1);
+			v->tex = uv(x, y + 1);
+			v->color = current_color;
+			++v;
+
+			++in_buffer;
+		}
+	}
+	Flush(image);
+}
+
+bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect, const Rect* clip)
 {
 	if(!font)
 		font = default_font;
 
-	// !TODO!
-	uint line_begin, line_end, line_index = 0;
-	int line_width, width = rect.SizeX();
-	uint text_end = (uint)strlen(text);
+	int width = rect.SizeX();
 	Vec4 current_color = color;
-	Rect rect = in_rect + offset;
-	Rect clip_rect;
-	Rect* clip = nullptr;
-	if(in_clip)
-	{
-		clip_rect = *in_clip + offset;
-		clip = &clip_rect;
-	}
 	bool bottom_clip = false;
 
 	Lock();
-
-	lines.clear();
-	while(font->SplitLine(line_begin, line_end, line_width, line_index, text, text_end, flags, width))
-		lines.push_back(TextLine(line_begin, line_end, line_width));
+	SplitTextLines(text, font, width, flags);
 
 	int y;
 	if(IS_SET(flags, Font::Bottom))
@@ -236,10 +145,10 @@ bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect&
 	return !bottom_clip;
 }
 
-void Gui::SplitTextLines(cstring text)
+void Gui::SplitTextLines(cstring text, Font* font, int width, int flags)
 {
 	uint line_begin, line_end, line_index = 0;
-	int line_width, width = rect.SizeX();
+	int line_width;
 	uint text_end = (uint)strlen(text);
 
 	lines.clear();

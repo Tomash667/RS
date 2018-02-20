@@ -31,4 +31,5 @@ struct Game : GameHandler
 	Camera* camera;
 	Player* player;
 	Label* label;
+	Panel* panel;
 };

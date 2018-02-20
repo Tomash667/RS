@@ -117,3 +117,20 @@ bool Font::SplitLine(uint& out_begin, uint& out_end, int& out_width, uint& in_ou
 
 	return true;
 }
+
+Int2 Font::CalculateSize(Cstring text, int limit_width) const
+{
+	int len = (int)strlen(text);
+	Int2 size(0, 0);
+	uint unused, index = 0;
+	int width;
+
+	while(SplitLine(unused, unused, width, index, text, len, 0, limit_width))
+	{
+		if(width > size.x)
+			size.x = width;
+		size.y += height;
+	}
+
+	return size;
+}
