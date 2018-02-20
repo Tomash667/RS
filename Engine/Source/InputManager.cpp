@@ -3,14 +3,14 @@
 
 InputManager::InputManager() : mouse_dif(Int2::Zero)
 {
-	for(uint i = 0; i < 255; ++i)
+	for(uint i = 0; i < 256; ++i)
 		keystate[i] = IS_UP;
 }
 
 void InputManager::Process(Key key, bool down)
 {
 	auto& k = keystate[(int)key];
-	if(key != Key::Escape)
+	if(key != Key::PrintScreen)
 	{
 		if(down)
 		{
@@ -50,7 +50,7 @@ void InputManager::Update()
 
 void InputManager::ReleaseKeys()
 {
-	for(uint i = 0; i < 255; ++i)
+	for(uint i = 0; i < 256; ++i)
 	{
 		if(keystate[i] & 0x2)
 			keystate[i] = IS_RELEASED;

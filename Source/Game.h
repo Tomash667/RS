@@ -2,6 +2,7 @@
 
 #include <GameHandler.h>
 
+struct GroundItem;
 struct Player;
 
 //enum GameState
@@ -16,20 +17,21 @@ struct Game : GameHandler
 	~Game();
 	int Run();
 	void OnInit() override;
+	void InitGui();
+	void LoadResources();
 	void OnUpdate(float dt) override;
-
-	/*void LoadResources();
+	void UpdateGame(float dt);
 	void CleanWorld();
-	void GenerateWorld();
-
-	GameState state;
-	PlayerController* pc;
-	vector<AIController*> ais;
-	vector<Unit*> units;*/
-
+	
 	Engine* engine;
 	Camera* camera;
 	Player* player;
-	Label* label;
-	Panel* panel;
+	vector<GroundItem*> items;
+
+	//====================================
+	// GAME GUI
+	//====================================
+	Label* label_paused;
+	Label* label_fps;
+	Panel* panel_fps;
 };

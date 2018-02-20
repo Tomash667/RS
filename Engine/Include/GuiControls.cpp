@@ -68,7 +68,7 @@ Label::Label() : font(nullptr), color(Color::Black), flags(Font::Left)
 
 void Label::Draw()
 {
-	gui->DrawText(text, font, color, 0, Rect::Create(pos, size));
+	gui->DrawText(text, font, color, flags, Rect::Create(pos, size));
 }
 
 void Label::CalculateSize()

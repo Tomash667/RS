@@ -111,7 +111,7 @@ bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect&
 	int y;
 	if(IS_SET(flags, Font::Bottom))
 		y = rect.Bottom() - int(lines.size())*font->height;
-	if(IS_SET(flags, Font::VCenter))
+	else if(IS_SET(flags, Font::VCenter))
 		y = rect.Top() + (rect.SizeY() - int(lines.size())*font->height) / 2;
 	else
 		y = rect.Top();
