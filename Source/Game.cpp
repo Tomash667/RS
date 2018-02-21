@@ -19,7 +19,7 @@
 #include "GroundItem.h"
 
 
-Game::Game() : engine(nullptr)
+Game::Game() : engine(nullptr), player(nullptr)
 {
 }
 
@@ -247,39 +247,47 @@ void Game::UpdateGame(float dt)
 		case +1: // right
 			d = 0;
 			speed = 5.f;
+			player->new_anim = Player::A_RUN_RIGHT;
 			break;
 		case -9: // right back
 			d = PI / 4;
 			speed = 2.5f;
+			player->new_anim = Player::A_WALK_BACK;
 			break;
 		case -10: // back
 			d = PI / 2;
 			speed = 2.5f;
+			player->new_anim = Player::A_WALK_BACK;
 			break;
 		case -11: // left back
 			d = PI * 3 / 4;
 			speed = 2.5f;
+			player->new_anim = Player::A_WALK_BACK;
 			break;
 		case -1: // left
 			d = PI;
 			speed = 5.f;
+			player->new_anim = Player::A_RUN_LEFT;
 			break;
 		case +9: // left forward
 			d = PI * 5 / 4;
 			speed = 7.f;
+			player->new_anim = Player::A_RUN;
 			break;
 		default:
 		case +10: // forward
 			d = PI * 3 / 2;
 			speed = 7.f;
+			player->new_anim = Player::A_RUN;
 			break;
 		case +11: // right forward
 			d = PI * 7 / 4;
 			speed = 7.f;
+			player->new_anim = Player::A_RUN;
 			break;
 		}
 
-		if(player->node->GetMeshInstance()->GetGroup(0).GetAnimation()->name == "biegnie")
+		if(player->anim == player->new_anim)
 			speed *= player->node->GetMeshInstance()->GetGroup(0).GetBlendT();
 		else
 			speed = 0.f;
@@ -287,24 +295,32 @@ void Game::UpdateGame(float dt)
 
 		d += player->node->rot - PI / 2;
 		player->node->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
-
-		if(!player->moving)
-		{
-			player->node->GetMeshInstance()->Play("biegnie", 0, 0);
-			player->moving = true;
-		}
 	}
 	else
-	{
-		if(player->moving)
-		{
-			player->node->GetMeshInstance()->Play("stoi", 0, 0);
-			player->moving = false;
-		}
-	}
+		player->new_anim = Player::A_STAND;
 
 	auto& mouse_dif = input->GetMouseMove();
 	player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
+	// anim rotate left, right
+
+	if(player->anim != player->new_anim)
+	{
+		player->anim = player->new_anim;
+		switch(player->anim)
+		{
+		case Player::A_STAND:
+			player->node->GetMeshInstance()->Play("stoi", 0, 0);
+			break;
+		case Player::A_RUN:
+		case Player::A_RUN_LEFT:
+		case Player::A_RUN_RIGHT:
+			player->node->GetMeshInstance()->Play("biegnie", 0, 0);
+			break;
+		case Player::A_WALK_BACK:
+			player->node->GetMeshInstance()->Play("idzie", PLAY_BACK, 0);
+			break;
+		}
+	}
 
 	player->node->GetMeshInstance()->Update(dt);
 

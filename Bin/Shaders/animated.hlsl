@@ -8,7 +8,7 @@ struct VS_INPUT
 {
     float3 pos : POSITION;
 	half weight : BLENDWEIGHT0;
-	int2 indices : BLENDINDICES0;
+	uint4 indices : BLENDINDICES0;
 	float3 normal : NORMAL;
 	float2 tex : TEXCOORD0;
 };
