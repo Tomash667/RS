@@ -40,6 +40,38 @@ const Quat Quat::Identity = { 0.f, 0.f, 0.f, 1.f };
 
 RNG _RNG;
 
+float Angle(float x1, float y1, float x2, float y2)
+{
+	float x = x2 - x1;
+	float y = y2 - y1;
+
+	if(x == 0)
+	{
+		if(y == 0)
+			return 0;
+		else if(y > 0)
+			return PI / 2.f;
+		else
+			return PI * 3.f / 2.f;
+	}
+	else if(y == 0)
+	{
+		if(x > 0)
+			return 0;
+		else
+			return PI;
+	}
+	else
+	{
+		if(x < 0)
+			return atan(y / x) + PI;
+		else if(y < 0)
+			return atan(y / x) + (2 * PI);
+		else
+			return atan(y / x);
+	}
+}
+
 float ShortestArc(float a, float b)
 {
 	if(fabs(b - a) < PI)
@@ -47,4 +79,20 @@ float ShortestArc(float a, float b)
 	if(b > a)
 		return b - a - PI * 2.0f;
 	return b - a + PI * 2.0f;
+}
+
+void LerpAngle(float& angle, float from, float to, float t)
+{
+	if(to > angle)
+	{
+		while(to - angle > PI)
+			to -= PI * 2;
+	}
+	else
+	{
+		while(to - angle < -PI)
+			to += PI * 2;
+	}
+
+	angle = from + t * (to - from);
 }
