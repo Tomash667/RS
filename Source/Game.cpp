@@ -229,7 +229,35 @@ void Game::UpdateGame(float dt)
 {
 	InputManager* input = engine->GetInput();
 
-	// update player
+	// items in front of player
+	const float pick_range = 2.f;
+	float best_range = pick_range;
+	GroundItem* best_item = nullptr;
+	for(GroundItem* item : items)
+	{
+		float dist = Vec3::Distance2d(player->node->pos, item->node->pos);
+		if(dist < best_range)
+		{
+			float angle = AngleDiff(Clip(player->node->rot + PI / 2), Clip(-Vec3::Angle2d(player->node->pos, item->node->pos)));
+			if(angle < PI / 4)
+			{
+				best_item = item;
+				best_range = dist;
+			}
+		}
+	}
+	if(player->item_before && player->item_before != best_item)
+	{
+		player->item_before->target = false;
+		player->item_before = nullptr;
+	}
+	if(best_item && best_item != player->item_before)
+	{
+		player->item_before = best_item;
+		best_item->target = true;
+	}
+
+	// move player
 	int dir = 0;
 	if(input->Down(Key::W))
 		dir += 10;
@@ -299,29 +327,43 @@ void Game::UpdateGame(float dt)
 	else
 		player->new_anim = Player::A_STAND;
 
+	// rotate player
 	auto& mouse_dif = input->GetMouseMove();
 	player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
-	// anim rotate left, right
+	if(player->new_anim == Player::A_STAND && mouse_dif.x != 0)
+	{
+		if(mouse_dif.x > 0)
+			player->new_anim = Player::A_ROTATE_RIGHT;
+		else
+			player->new_anim = Player::A_ROTATE_LEFT;
+	}
 
+	// update animation
+	MeshInstance* inst = player->node->GetMeshInstance();
 	if(player->anim != player->new_anim)
 	{
 		player->anim = player->new_anim;
 		switch(player->anim)
 		{
 		case Player::A_STAND:
-			player->node->GetMeshInstance()->Play("stoi", 0, 0);
+			inst->Play("stoi", 0, 0);
 			break;
 		case Player::A_RUN:
 		case Player::A_RUN_LEFT:
 		case Player::A_RUN_RIGHT:
-			player->node->GetMeshInstance()->Play("biegnie", 0, 0);
+			inst->Play("biegnie", 0, 0);
 			break;
 		case Player::A_WALK_BACK:
-			player->node->GetMeshInstance()->Play("idzie", PLAY_BACK, 0);
+			inst->Play("idzie", PLAY_BACK, 0);
+			break;
+		case Player::A_ROTATE_LEFT:
+			inst->Play("w_lewo", 0, 0);
+			break;
+		case Player::A_ROTATE_RIGHT:
+			inst->Play("w_prawo", 0, 0);
 			break;
 		}
 	}
-
 	player->node->GetMeshInstance()->Update(dt);
 
 	// update camera

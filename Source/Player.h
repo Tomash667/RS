@@ -28,6 +28,7 @@ struct Player
 	SceneNode* node;
 	float hp, hpmax, food, foodmax;
 	Animation anim, new_anim;
+	GroundItem* item_before;
 
-	Player() : hp(60.f), hpmax(100.f), food(33.f), foodmax(100.f), anim(A_NONE), new_anim(A_STAND) {}
+	Player() : hp(60.f), hpmax(100.f), food(33.f), foodmax(100.f), anim(A_NONE), new_anim(A_STAND), item_before(nullptr) {}
 };

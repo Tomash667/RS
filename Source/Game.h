@@ -22,7 +22,7 @@ struct Game : GameHandler
 	void OnUpdate(float dt) override;
 	void UpdateGame(float dt);
 	void CleanWorld();
-	
+
 	Engine* engine;
 	Camera* camera;
 	Player* player;
