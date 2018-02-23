@@ -1,4 +1,4 @@
-cbuffer globals
+cbuffer vs_globals
 {
 	matrix matWorldViewProj;
 	matrix matBones[32];
@@ -38,8 +38,13 @@ VS_OUTPUT vs_main(VS_INPUT In)
 
 Texture2D tex;
 SamplerState TexSampler;
+cbuffer ps_globals
+{
+	// shared between mesh.hlsl and animated.hlsl
+	float4 tint;
+}
 
 float4 ps_main(VS_OUTPUT In) : SV_TARGET
 {
-	return tex.Sample(TexSampler, In.tex);
+	return tex.Sample(TexSampler, In.tex) * tint;
 }

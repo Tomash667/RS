@@ -46,7 +46,8 @@ void MeshShader::InitMeshShader()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
-	render->CreateShader(mesh_shader, "mesh.hlsl", desc, countof(desc), sizeof(Buffer));
+	uint cbuffer_size[] = { sizeof(Buffer), sizeof(PsBuffer) };
+	render->CreateShader(mesh_shader, "mesh.hlsl", desc, countof(desc), cbuffer_size);
 	mesh_shader.vertex_size = sizeof(Vertex);
 }
 
@@ -60,7 +61,10 @@ void MeshShader::InitAnimatedMeshShader()
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
-	render->CreateShader(animated_shader, "animated.hlsl", desc, countof(desc), sizeof(AniBuffer));
+	uint cbuffer_size[] = { sizeof(AniBuffer), 0 };
+	render->CreateShader(animated_shader, "animated.hlsl", desc, countof(desc), cbuffer_size);
+	animated_shader.ps_buffer = mesh_shader.ps_buffer;
+	animated_shader.ps_buffer->AddRef();
 	animated_shader.vertex_size = sizeof(AniVertex);
 }
 
@@ -70,6 +74,7 @@ void MeshShader::ResetParams()
 	auto context = render->GetContext();
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->PSSetSamplers(0, 1, &sampler.Get());
+	current_tint = Vec3(-1, -1, -1);
 }
 
 void MeshShader::SetParams(bool is_animated)
@@ -83,17 +88,19 @@ void MeshShader::SetParams(bool is_animated)
 	auto& shader = *shader_ptr;
 
 	context->IASetInputLayout(shader.layout);
-	context->VSSetConstantBuffers(0, 1, &shader.buffer);
+	context->VSSetConstantBuffers(0, 1, &shader.vs_buffer);
 	context->VSSetShader(shader.vertex_shader, nullptr, 0);
+	context->PSSetConstantBuffers(0, 1, &shader.ps_buffer);
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 }
 
-void MeshShader::SetBuffer(const Matrix& matWorldViewProj, const vector<Matrix>* matBones)
+void MeshShader::SetBuffer(const Vec3& tint, const Matrix& matWorldViewProj, const vector<Matrix>* matBones)
 {
 	auto& shader = (matBones ? animated_shader : mesh_shader);
 	auto context = render->GetContext();
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = context->Map(shader.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+	C(context->Map(shader.vs_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 	if(matBones)
 	{
 		AniBuffer& b = *(AniBuffer*)mappedResource.pData;
@@ -106,7 +113,16 @@ void MeshShader::SetBuffer(const Matrix& matWorldViewProj, const vector<Matrix>*
 		Buffer& b = *(Buffer*)mappedResource.pData;
 		b.matWorldViewProj = matWorldViewProj.Transpose();
 	}
-	context->Unmap(shader.buffer, 0);
+	context->Unmap(shader.vs_buffer, 0);
+
+	if(tint != current_tint)
+	{
+		current_tint = tint;
+		C(context->Map(shader.ps_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
+		PsBuffer& b = *(PsBuffer*)mappedResource.pData;
+		b.tint = Vec4(tint, 1.f);
+		context->Unmap(shader.ps_buffer, 0);
+	}
 }
 
 void MeshShader::Draw(Mesh* mesh)

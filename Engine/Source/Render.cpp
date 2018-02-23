@@ -5,7 +5,7 @@
 #include "Shader.h"
 
 
-Shader::Shader() : vertex_shader(nullptr), pixel_shader(nullptr), layout(nullptr), buffer(nullptr)
+Shader::Shader() : vertex_shader(nullptr), pixel_shader(nullptr), layout(nullptr), vs_buffer(nullptr), ps_buffer(nullptr)
 {
 }
 
@@ -17,8 +17,10 @@ Shader::~Shader()
 		pixel_shader->Release();
 	if(layout)
 		layout->Release();
-	if(buffer)
-		buffer->Release();
+	if(vs_buffer)
+		vs_buffer->Release();
+	if(ps_buffer)
+		ps_buffer->Release();
 }
 
 
@@ -261,39 +263,55 @@ ID3DBlob* Render::CompileShader(cstring filename, cstring function, bool vertex)
 	return shaderBlob;
 }
 
-void Render::CreateShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size)
+void Render::CreateShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size[2])
 {
 	// create vertex shader
 	CPtr<ID3DBlob> vs_buf = CompileShader(filename, "vs_main", true);
 	HRESULT result = device->CreateVertexShader(vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), nullptr, &shader.vertex_shader);
 	if(FAILED(result))
-		throw Format("Failed to create vertex shader (%u).", result);
+		throw Format("Failed to create vertex shader '%s' (%u).", filename, result);
 
 	// create pixel shader
 	CPtr<ID3DBlob> ps_buf = CompileShader(filename, "ps_main", false);
 	result = device->CreatePixelShader(ps_buf->GetBufferPointer(), ps_buf->GetBufferSize(), nullptr, &shader.pixel_shader);
 	if(FAILED(result))
-		throw Format("Failed to create pixel shader (%u).", result);
+		throw Format("Failed to create pixel shader '%s' (%u).", filename, result);
 
 	// create layout
 	result = device->CreateInputLayout(desc, desc_count, vs_buf->GetBufferPointer(), vs_buf->GetBufferSize(), &shader.layout);
 	if(FAILED(result))
-		throw Format("Failed to create input layout (%u).", result);
+		throw Format("Failed to create input layout '%s' (%u).", filename, result);
 
-	// create cbuffer for shader
-	if(cbuffer_size > 0)
+	// create cbuffer for vertex shader
+	if(cbuffer_size[0] > 0)
 	{
 		D3D11_BUFFER_DESC cb_desc;
 		cb_desc.Usage = D3D11_USAGE_DYNAMIC;
-		cb_desc.ByteWidth = cbuffer_size;
+		cb_desc.ByteWidth = cbuffer_size[0];
 		cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		cb_desc.MiscFlags = 0;
 		cb_desc.StructureByteStride = 0;
 
-		result = device->CreateBuffer(&cb_desc, NULL, &shader.buffer);
+		result = device->CreateBuffer(&cb_desc, NULL, &shader.vs_buffer);
 		if(FAILED(result))
-			throw Format("Failed to create cbuffer (%u).", result);
+			throw Format("Failed to create vs cbuffer '%s' (%u).", filename, result);
+	}
+
+	// create cbuffer for pixel shader
+	if(cbuffer_size[1] > 0)
+	{
+		D3D11_BUFFER_DESC cb_desc;
+		cb_desc.Usage = D3D11_USAGE_DYNAMIC;
+		cb_desc.ByteWidth = cbuffer_size[1];
+		cb_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cb_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cb_desc.MiscFlags = 0;
+		cb_desc.StructureByteStride = 0;
+
+		result = device->CreateBuffer(&cb_desc, NULL, &shader.ps_buffer);
+		if(FAILED(result))
+			throw Format("Failed to create ps cbuffer '%s' (%u).", filename, result);
 	}
 }
 

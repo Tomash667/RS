@@ -248,13 +248,13 @@ void Game::UpdateGame(float dt)
 	}
 	if(player->item_before && player->item_before != best_item)
 	{
-		player->item_before->target = false;
+		player->item_before->node->tint = Vec3::One;
 		player->item_before = nullptr;
 	}
 	if(best_item && best_item != player->item_before)
 	{
 		player->item_before = best_item;
-		best_item->target = true;
+		best_item->node->tint = Vec3(2, 2, 2);
 	}
 
 	// move player
@@ -275,43 +275,43 @@ void Game::UpdateGame(float dt)
 		case +1: // right
 			d = 0;
 			speed = 5.f;
-			player->new_anim = Player::A_RUN_RIGHT;
+			player->new_anim = Player::Animation::RUN_RIGHT;
 			break;
 		case -9: // right back
 			d = PI / 4;
 			speed = 2.5f;
-			player->new_anim = Player::A_WALK_BACK;
+			player->new_anim = Player::Animation::WALK_BACK;
 			break;
 		case -10: // back
 			d = PI / 2;
 			speed = 2.5f;
-			player->new_anim = Player::A_WALK_BACK;
+			player->new_anim = Player::Animation::WALK_BACK;
 			break;
 		case -11: // left back
 			d = PI * 3 / 4;
 			speed = 2.5f;
-			player->new_anim = Player::A_WALK_BACK;
+			player->new_anim = Player::Animation::WALK_BACK;
 			break;
 		case -1: // left
 			d = PI;
 			speed = 5.f;
-			player->new_anim = Player::A_RUN_LEFT;
+			player->new_anim = Player::Animation::RUN_LEFT;
 			break;
 		case +9: // left forward
 			d = PI * 5 / 4;
 			speed = 7.f;
-			player->new_anim = Player::A_RUN;
+			player->new_anim = Player::Animation::RUN;
 			break;
 		default:
 		case +10: // forward
 			d = PI * 3 / 2;
 			speed = 7.f;
-			player->new_anim = Player::A_RUN;
+			player->new_anim = Player::Animation::RUN;
 			break;
 		case +11: // right forward
 			d = PI * 7 / 4;
 			speed = 7.f;
-			player->new_anim = Player::A_RUN;
+			player->new_anim = Player::Animation::RUN;
 			break;
 		}
 
@@ -325,17 +325,17 @@ void Game::UpdateGame(float dt)
 		player->node->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
 	}
 	else
-		player->new_anim = Player::A_STAND;
+		player->new_anim = Player::Animation::STAND;
 
 	// rotate player
 	auto& mouse_dif = input->GetMouseMove();
 	player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
-	if(player->new_anim == Player::A_STAND && mouse_dif.x != 0)
+	if(player->new_anim == Player::Animation::STAND && mouse_dif.x != 0)
 	{
 		if(mouse_dif.x > 0)
-			player->new_anim = Player::A_ROTATE_RIGHT;
+			player->new_anim = Player::Animation::ROTATE_RIGHT;
 		else
-			player->new_anim = Player::A_ROTATE_LEFT;
+			player->new_anim = Player::Animation::ROTATE_LEFT;
 	}
 
 	// update animation
@@ -345,21 +345,21 @@ void Game::UpdateGame(float dt)
 		player->anim = player->new_anim;
 		switch(player->anim)
 		{
-		case Player::A_STAND:
+		case Player::Animation::STAND:
 			inst->Play("stoi", 0, 0);
 			break;
-		case Player::A_RUN:
-		case Player::A_RUN_LEFT:
-		case Player::A_RUN_RIGHT:
+		case Player::Animation::RUN:
+		case Player::Animation::RUN_LEFT:
+		case Player::Animation::RUN_RIGHT:
 			inst->Play("biegnie", 0, 0);
 			break;
-		case Player::A_WALK_BACK:
+		case Player::Animation::WALK_BACK:
 			inst->Play("idzie", PLAY_BACK, 0);
 			break;
-		case Player::A_ROTATE_LEFT:
+		case Player::Animation::ROTATE_LEFT:
 			inst->Play("w_lewo", 0, 0);
 			break;
-		case Player::A_ROTATE_RIGHT:
+		case Player::Animation::ROTATE_RIGHT:
 			inst->Play("w_prawo", 0, 0);
 			break;
 		}

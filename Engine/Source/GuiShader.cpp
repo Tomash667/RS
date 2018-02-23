@@ -20,7 +20,8 @@ void GuiShader::Init(Render* render)
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
-	render->CreateShader(shader, "gui.hlsl", desc, countof(desc), sizeof(Buffer));
+	uint cbuffer_size[] = { sizeof(Buffer), 0 };
+	render->CreateShader(shader, "gui.hlsl", desc, countof(desc), cbuffer_size);
 	shader.vertex_size = sizeof(VertexPosTexColor);
 
 	// create texture sampler
@@ -83,14 +84,14 @@ void GuiShader::SetParams()
 	context->PSSetSamplers(0, 1, &sampler.Get());
 	context->PSSetShader(shader.pixel_shader, nullptr, 0);
 	context->OMSetBlendState(blend_state, nullptr, 0xFFFFFFFF);
-	context->VSSetConstantBuffers(0, 1, &shader.buffer);
+	context->VSSetConstantBuffers(0, 1, &shader.vs_buffer);
 	render->SetDepthTest(false);
 	Vec2 wnd_size = Vec2(render->GetWindow()->GetSize());
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result = context->Map(shader.buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	C(context->Map(shader.vs_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource));
 	Buffer* buffer = (Buffer*)mappedResource.pData;
 	buffer->size = wnd_size;
-	context->Unmap(shader.buffer, 0);
+	context->Unmap(shader.vs_buffer, 0);
 }
 
 void GuiShader::RestoreParams()

@@ -31,7 +31,12 @@ struct Color
 	{
 		return Vec4(float(r) / 255.f, float(g) / 255.f, float(b) / 255.f, float(a) / 255.f);
 	}
+	operator Vec3 () const
+	{
+		return Vec3(float(r) / 255.f, float(g) / 255.f, float(b) / 255.f);
+	}
 
+	static Color None;
 	static Color Black;
 	static Color White;
 };

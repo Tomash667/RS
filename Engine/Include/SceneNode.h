@@ -8,7 +8,7 @@ struct SceneNode
 {
 	friend struct Scene;
 
-	SceneNode(cstring debug_name = nullptr) : mesh(nullptr), inst(nullptr), rot(0.f), visible(true), attach_point(nullptr)
+	SceneNode(cstring debug_name = nullptr) : mesh(nullptr), inst(nullptr), rot(0.f), visible(true), attach_point(nullptr), tint(Color::White)
 	{
 #ifdef _DEBUG
 		this->debug_name = debug_name;
@@ -26,6 +26,7 @@ struct SceneNode
 	string debug_name;
 #endif
 	Vec3 pos;
+	Vec3 tint;
 	float rot;
 	bool visible;
 private:

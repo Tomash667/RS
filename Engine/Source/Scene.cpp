@@ -58,12 +58,12 @@ void Scene::DrawNodes(vector<SceneNode*>& nodes, SceneNode* parent, Matrix* pare
 		{
 			node->GetMeshInstance()->SetupBones();
 			shader->SetParams(true);
-			shader->SetBuffer(mat_combined, &node->GetMeshInstance()->GetMatrixBones());
+			shader->SetBuffer(node->tint, mat_combined, &node->GetMeshInstance()->GetMatrixBones());
 		}
 		else
 		{
 			shader->SetParams(false);
-			shader->SetBuffer(mat_combined, nullptr);
+			shader->SetBuffer(node->tint, mat_combined, nullptr);
 		}
 
 		shader->Draw(node->GetMesh());

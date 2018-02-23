@@ -6,7 +6,7 @@ struct Render
 	~Render();
 	void Init();
 	ID3DBlob* CompileShader(cstring filename, cstring function, bool vertex);
-	void CreateShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size);
+	void CreateShader(Shader& shader, cstring filename, D3D11_INPUT_ELEMENT_DESC* desc, uint desc_count, uint cbuffer_size[2]);
 	void BeginScene();
 	void EndScene();
 
