@@ -22,7 +22,8 @@ struct Player
 		RELOAD,
 		HURT,
 		DIE,
-		PUNCH
+		PUNCH,
+		ACTION
 	};
 
 	enum class Action
@@ -34,6 +35,7 @@ struct Player
 	SceneNode* node;
 	float hp, hpmax, food, foodmax;
 	Action action;
+	int action_state;
 	Animation anim, new_anim;
 	GroundItem* item_before;
 

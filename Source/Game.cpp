@@ -17,9 +17,10 @@
 #include <Font.h>
 #include "Player.h"
 #include "GroundItem.h"
+#include "GameGui.h"
 
 
-Game::Game() : engine(nullptr), player(nullptr)
+Game::Game() : engine(nullptr), player(nullptr), game_gui(nullptr)
 {
 }
 
@@ -46,7 +47,7 @@ int Game::Run()
 
 void Game::OnInit()
 {
-	//LoadResources();
+	LoadResources();
 	//state = GS_MAIN_MENU;
 
 	ResourceManager* res_mgr = engine->GetResourceManager();
@@ -56,14 +57,14 @@ void Game::OnInit()
 
 	player = new Player;
 	player->node = new SceneNode("player");
-	player->node->SetMeshInstance(mesh);
+	player->node->SetMesh(mesh);
 	player->node->GetMeshInstance()->Play("stoi", 0, 0);
 	player->node->pos = Vec3(0, 0, 0);
 	player->node->rot = PI;
 	scene->Add(player->node);
 
 	SceneNode* gun = new SceneNode("gun");
-	gun->SetMeshInstance(res_mgr->GetMesh("m1911.qmsh"));
+	gun->SetMesh(res_mgr->GetMesh("m1911.qmsh"));
 	//gun->SetMesh(res_mgr->GetMesh("marker.qmsh"));
 	gun->pos = Vec3(0, 0, 0);
 	gun->rot = 0;
@@ -92,6 +93,33 @@ void Game::OnInit()
 	engine->GetRender()->SetClearColor(Vec4(0, 0.5f, 1, 1));
 
 	InitGui();
+
+	GroundItem* ground_item = new GroundItem;
+	ground_item->item = &Item::items[0];
+	ground_item->count = 0;
+	ground_item->node = new SceneNode();
+	ground_item->node->pos = Vec3(-2.f, 0, 0);
+	ground_item->node->SetMesh(ground_item->item->mesh);
+	items.push_back(ground_item);
+	scene->Add(ground_item->node);
+
+	ground_item = new GroundItem;
+	ground_item->item = &Item::items[1];
+	ground_item->count = 1;
+	ground_item->node = new SceneNode();
+	ground_item->node->pos = Vec3(-2.f, 0, 2);
+	ground_item->node->SetMesh(ground_item->item->mesh);
+	items.push_back(ground_item);
+	scene->Add(ground_item->node);
+
+	ground_item = new GroundItem;
+	ground_item->item = &Item::items[2];
+	ground_item->count = 15;
+	ground_item->node = new SceneNode();
+	ground_item->node->pos = Vec3(-2.f, 0, -2);
+	ground_item->node->SetMesh(ground_item->item->mesh);
+	items.push_back(ground_item);
+	scene->Add(ground_item->node);
 }
 
 void Game::InitGui()
@@ -99,6 +127,9 @@ void Game::InitGui()
 	Gui* gui = engine->GetGui();
 	ResourceManager* res_mgr = engine->GetResourceManager();
 	const Int2& wnd_size = engine->GetWindow()->GetSize();
+
+	game_gui = new GameGui(this);
+	gui->Add(game_gui);
 
 	Sprite* sprite = new Sprite;
 	sprite->image = res_mgr->GetTexture("crosshair_dot.png");
@@ -156,7 +187,7 @@ void Game::LoadResources()
 		}
 	}
 
-	for(Object& obj : Object::objects)
+	/*for(Object& obj : Object::objects)
 	{
 		if(obj.mesh_id)
 		{
@@ -174,7 +205,7 @@ void Game::LoadResources()
 			if(!unit.mesh)
 				throw Format("Unit %s is missing mesh '%s'.", unit.id, unit.mesh_id);
 		}
-	}
+	}*/
 }
 
 void Game::OnUpdate(float dt)
@@ -228,114 +259,170 @@ void Game::OnUpdate(float dt)
 void Game::UpdateGame(float dt)
 {
 	InputManager* input = engine->GetInput();
+	auto& mouse_dif = input->GetMouseMove();
 
 	// items in front of player
-	const float pick_range = 2.f;
-	float best_range = pick_range;
-	GroundItem* best_item = nullptr;
-	for(GroundItem* item : items)
+	if(player->action == Player::Action::NONE)
 	{
-		float dist = Vec3::Distance2d(player->node->pos, item->node->pos);
-		if(dist < best_range)
+		const float pick_range = 2.f;
+		float best_range = pick_range;
+		GroundItem* best_item = nullptr;
+		for(GroundItem* item : items)
 		{
-			float angle = AngleDiff(Clip(player->node->rot + PI / 2), Clip(-Vec3::Angle2d(player->node->pos, item->node->pos)));
-			if(angle < PI / 4)
+			float dist = Vec3::Distance2d(player->node->pos, item->node->pos);
+			if(dist < best_range)
 			{
-				best_item = item;
-				best_range = dist;
+				float angle = AngleDiff(Clip(player->node->rot + PI / 2), Clip(-Vec3::Angle2d(player->node->pos, item->node->pos)));
+				if(angle < PI / 4)
+				{
+					best_item = item;
+					best_range = dist;
+				}
 			}
 		}
-	}
-	if(player->item_before && player->item_before != best_item)
-	{
-		player->item_before->node->tint = Vec3::One;
-		player->item_before = nullptr;
-	}
-	if(best_item && best_item != player->item_before)
-	{
-		player->item_before = best_item;
-		best_item->node->tint = Vec3(2, 2, 2);
-	}
-
-	// move player
-	int dir = 0;
-	if(input->Down(Key::W))
-		dir += 10;
-	if(input->Down(Key::S))
-		dir -= 10;
-	if(input->Down(Key::D))
-		dir += 1;
-	if(input->Down(Key::A))
-		dir -= 1;
-	if(dir != 0)
-	{
-		float speed, d;
-		switch(dir)
+		if(player->item_before && player->item_before != best_item)
 		{
-		case +1: // right
-			d = 0;
-			speed = 5.f;
-			player->new_anim = Player::Animation::RUN_RIGHT;
-			break;
-		case -9: // right back
-			d = PI / 4;
-			speed = 2.5f;
-			player->new_anim = Player::Animation::WALK_BACK;
-			break;
-		case -10: // back
-			d = PI / 2;
-			speed = 2.5f;
-			player->new_anim = Player::Animation::WALK_BACK;
-			break;
-		case -11: // left back
-			d = PI * 3 / 4;
-			speed = 2.5f;
-			player->new_anim = Player::Animation::WALK_BACK;
-			break;
-		case -1: // left
-			d = PI;
-			speed = 5.f;
-			player->new_anim = Player::Animation::RUN_LEFT;
-			break;
-		case +9: // left forward
-			d = PI * 5 / 4;
-			speed = 7.f;
-			player->new_anim = Player::Animation::RUN;
-			break;
-		default:
-		case +10: // forward
-			d = PI * 3 / 2;
-			speed = 7.f;
-			player->new_anim = Player::Animation::RUN;
-			break;
-		case +11: // right forward
-			d = PI * 7 / 4;
-			speed = 7.f;
-			player->new_anim = Player::Animation::RUN;
-			break;
+			player->item_before->node->tint = Vec3::One;
+			player->item_before = nullptr;
+		}
+		if(best_item && best_item != player->item_before)
+		{
+			player->item_before = best_item;
+			best_item->node->tint = Vec3(2, 2, 2);
 		}
 
-		if(player->anim == player->new_anim)
-			speed *= player->node->GetMeshInstance()->GetGroup(0).GetBlendT();
-		else
-			speed = 0.f;
-		speed *= dt;
+		if(player->item_before && input->Pressed(Key::E))
+		{
+			player->action = Player::Action::PICKUP;
+			player->action_state = 0;
+			player->new_anim = Player::Animation::ACTION;
+			player->node->GetMeshInstance()->Play("podnosi", 0, 0);
+		}
+	}
+	else if(player->action == Player::Action::PICKUP)
+	{
+		MeshInstance* inst = player->node->GetMeshInstance();
+		if(player->action_state == 0)
+		{
+			float speed = 3.f * dt;
+			float expected_rot = Clip(-Vec3::Angle2d(player->node->pos, player->item_before->node->pos) - PI/2);
+			float dif = AngleDiff(player->node->rot, expected_rot);
+			if(dif < speed)
+			{
+				player->node->rot = expected_rot;
+				player->action_state = 1;
+			}
+			else
+			{
+				float arc = ShortestArc(player->node->rot, expected_rot);
+				player->node->rot = Clip(player->node->rot + Sign(arc) * speed);
+			}
+		}
 
-		d += player->node->rot - PI / 2;
-		player->node->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
+		if(player->action_state != 2 && inst->GetProgress(0) >= 19.f / 34)
+		{
+			engine->GetScene()->Remove(player->item_before->node);
+			DeleteElement(items, player->item_before);
+			player->item_before = nullptr;
+			player->action_state = 2;
+		}
+
+		if(inst->GetEndResultClear(0))
+		{
+			player->new_anim = Player::Animation::STAND;
+			player->action = Player::Action::NONE;
+		}
 	}
 	else
-		player->new_anim = Player::Animation::STAND;
-
-	// rotate player
-	auto& mouse_dif = input->GetMouseMove();
-	player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
-	if(player->new_anim == Player::Animation::STAND && mouse_dif.x != 0)
 	{
-		if(mouse_dif.x > 0)
-			player->new_anim = Player::Animation::ROTATE_RIGHT;
+		if(player->item_before)
+		{
+			player->item_before->node->tint = Vec3::One;
+			player->item_before = nullptr;
+		}
+	}
+
+	if(player->action == Player::Action::NONE)
+	{
+		// move player
+		int dir = 0;
+		if(input->Down(Key::W))
+			dir += 10;
+		if(input->Down(Key::S))
+			dir -= 10;
+		if(input->Down(Key::D))
+			dir += 1;
+		if(input->Down(Key::A))
+			dir -= 1;
+		if(dir != 0)
+		{
+			float speed, d;
+			switch(dir)
+			{
+			case +1: // right
+				d = 0;
+				speed = 5.f;
+				player->new_anim = Player::Animation::RUN_RIGHT;
+				break;
+			case -9: // right back
+				d = PI / 4;
+				speed = 2.5f;
+				player->new_anim = Player::Animation::WALK_BACK;
+				break;
+			case -10: // back
+				d = PI / 2;
+				speed = 2.5f;
+				player->new_anim = Player::Animation::WALK_BACK;
+				break;
+			case -11: // left back
+				d = PI * 3 / 4;
+				speed = 2.5f;
+				player->new_anim = Player::Animation::WALK_BACK;
+				break;
+			case -1: // left
+				d = PI;
+				speed = 5.f;
+				player->new_anim = Player::Animation::RUN_LEFT;
+				break;
+			case +9: // left forward
+				d = PI * 5 / 4;
+				speed = 7.f;
+				player->new_anim = Player::Animation::RUN;
+				break;
+			default:
+			case +10: // forward
+				d = PI * 3 / 2;
+				speed = 7.f;
+				player->new_anim = Player::Animation::RUN;
+				break;
+			case +11: // right forward
+				d = PI * 7 / 4;
+				speed = 7.f;
+				player->new_anim = Player::Animation::RUN;
+				break;
+			}
+
+			if(player->anim == player->new_anim)
+				speed *= player->node->GetMeshInstance()->GetGroup(0).GetBlendT();
+			else
+				speed = 0.f;
+			speed *= dt;
+
+			d += player->node->rot - PI / 2;
+			player->node->pos += Vec3(sin(d)*speed, 0, cos(d)*speed);
+		}
 		else
-			player->new_anim = Player::Animation::ROTATE_LEFT;
+			player->new_anim = Player::Animation::STAND;
+
+		// rotate player
+		player->node->rot = Clip(player->node->rot + float(mouse_dif.x) / 800);
+		if(player->new_anim == Player::Animation::STAND && mouse_dif.x != 0)
+		{
+			if(mouse_dif.x > 0)
+				player->new_anim = Player::Animation::ROTATE_RIGHT;
+			else
+				player->new_anim = Player::Animation::ROTATE_LEFT;
+		}
 	}
 
 	// update animation

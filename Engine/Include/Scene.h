@@ -7,6 +7,7 @@ struct Scene
 	void Add(SceneNode* node);
 	void Draw();
 	void Init();
+	void Remove(SceneNode* node);
 
 	Camera* GetCamera() { return camera; }
 

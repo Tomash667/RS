@@ -78,3 +78,9 @@ void Scene::Init()
 {
 	shader->Init(render);
 }
+
+void Scene::Remove(SceneNode* node)
+{
+	assert(node);
+	DeleteElement(nodes, node);
+}

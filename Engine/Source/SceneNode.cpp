@@ -18,14 +18,10 @@ void SceneNode::AddChild(SceneNode* node, Mesh::Point* attach_point)
 
 void SceneNode::SetMesh(Mesh* mesh)
 {
-	assert(mesh && !mesh->IsAnimated());
+	assert(mesh);
 	this->mesh = mesh;
-	this->inst = nullptr;
-}
-
-void SceneNode::SetMeshInstance(Mesh* mesh)
-{
-	assert(mesh && mesh->IsAnimated());
-	this->mesh = mesh;
-	this->inst = new MeshInstance(mesh);
+	if(mesh->IsAnimated())
+		inst = new MeshInstance(mesh);
+	else
+		inst = nullptr;
 }

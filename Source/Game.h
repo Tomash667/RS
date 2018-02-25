@@ -2,6 +2,7 @@
 
 #include <GameHandler.h>
 
+struct GameGui;
 struct GroundItem;
 struct Player;
 
@@ -24,6 +25,7 @@ struct Game : GameHandler
 	void CleanWorld();
 
 	Engine* engine;
+	GameGui* game_gui;
 	Camera* camera;
 	Player* player;
 	vector<GroundItem*> items;
