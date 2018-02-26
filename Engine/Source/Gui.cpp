@@ -266,3 +266,29 @@ void Gui::FillQuad(const Box2d& pos, const Box2d& tex, const Vec4& color)
 
 	++in_buffer;
 }
+
+bool Gui::To2dPoint(const Vec3& pos, Int2& pt)
+{
+	Vec4 v4;
+	Vec3::Transform(pos, mViewProj, v4);
+
+	if(v4.z < 0)
+	{
+		// behind camera
+		return false;
+	}
+
+	// see if we are in world space already
+	Vec3 v3(v4.x, v4.y, v4.z);
+	if(v4.w != 1)
+	{
+		if(v4.w == 0)
+			v4.w = 0.00001f;
+		v3 /= v4.w;
+	}
+
+	pt.x = int(v3.x*(wnd_size.x / 2) + (wnd_size.x / 2));
+	pt.y = -int(v3.y*(wnd_size.y / 2) - (wnd_size.y / 2));
+
+	return true;
+}

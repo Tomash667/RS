@@ -27,4 +27,5 @@ private:
 	CPtr<ID3D11Buffer> vb;
 	CPtr<ID3D11BlendState> blend_state, no_blend_state;
 	VertexPosTexColor* locked_data;
+	ID3D11ShaderResourceView* empty_texture;
 };

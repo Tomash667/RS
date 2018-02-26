@@ -95,8 +95,8 @@ void Game::OnInit()
 	InitGui();
 
 	GroundItem* ground_item = new GroundItem;
-	ground_item->item = &Item::items[0];
-	ground_item->count = 0;
+	ground_item->item = Item::Get("gun");
+	ground_item->count = ground_item->item->count;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, 0);
 	ground_item->node->SetMesh(ground_item->item->mesh);
@@ -104,8 +104,8 @@ void Game::OnInit()
 	scene->Add(ground_item->node);
 
 	ground_item = new GroundItem;
-	ground_item->item = &Item::items[1];
-	ground_item->count = 1;
+	ground_item->item = Item::Get("food");
+	ground_item->count = ground_item->count;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, 2);
 	ground_item->node->SetMesh(ground_item->item->mesh);
@@ -113,8 +113,8 @@ void Game::OnInit()
 	scene->Add(ground_item->node);
 
 	ground_item = new GroundItem;
-	ground_item->item = &Item::items[2];
-	ground_item->count = 15;
+	ground_item->item = Item::Get("ammo");
+	ground_item->count = ground_item->count;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, -2);
 	ground_item->node->SetMesh(ground_item->item->mesh);
