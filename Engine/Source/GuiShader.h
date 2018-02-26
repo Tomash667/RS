@@ -12,11 +12,13 @@ struct GuiShader
 	};
 
 	GuiShader();
+	~GuiShader();
 	void Init(Render* render);
 	void SetParams();
 	void RestoreParams();
 	void Draw(Texture* tex, uint count);
 	VertexPosTexColor* Lock();
+	Texture* GetEmptyTexture() { return empty_texture; }
 
 	static const uint MaxQuads = 256;
 
@@ -27,5 +29,5 @@ private:
 	CPtr<ID3D11Buffer> vb;
 	CPtr<ID3D11BlendState> blend_state, no_blend_state;
 	VertexPosTexColor* locked_data;
-	ID3D11ShaderResourceView* empty_texture;
+	Texture* empty_texture;
 };

@@ -8,6 +8,8 @@
 #include "Scene.h"
 #include "Gui.h"
 #include "Timer.h"
+#include "Camera.h"
+
 
 Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), res_mgr(nullptr), scene(nullptr), gui(nullptr),
 shutdown(false), fps(0)
@@ -118,7 +120,7 @@ void Engine::Loop()
 		// draw
 		render->BeginScene();
 		scene->Draw();
-		gui->Draw();
+		gui->Draw(scene->GetCamera()->GetMatrix(), window->GetSize());
 		render->EndScene();
 
 		input->Update();

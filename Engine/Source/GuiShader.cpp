@@ -4,8 +4,13 @@
 #include "Window.h"
 #include "Texture.h"
 
-GuiShader::GuiShader() : render(nullptr), locked_data(nullptr)
+GuiShader::GuiShader() : render(nullptr), locked_data(nullptr), empty_texture(nullptr)
 {
+}
+
+GuiShader::~GuiShader()
+{
+	delete empty_texture;
 }
 
 void GuiShader::Init(Render* render)
@@ -73,6 +78,40 @@ void GuiShader::Init(Render* render)
 		throw Format("Failed to create gui blend state (%u).", result);
 
 	render->GetContext()->OMGetBlendState(no_blend_state, nullptr, nullptr);
+
+	// create empty texture
+	D3D11_TEXTURE2D_DESC t_desc = { 0 };
+	t_desc.Width = 1;
+	t_desc.Height = 1;
+	t_desc.MipLevels = 1;
+	t_desc.ArraySize = 1;
+	t_desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	t_desc.SampleDesc.Count = 1;
+	t_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	t_desc.Usage = D3D11_USAGE_DEFAULT;
+
+	Vec4 color = Color::White;
+	D3D11_SUBRESOURCE_DATA t_sub_data = { 0 };
+	t_sub_data.pSysMem = &color;
+	t_sub_data.SysMemPitch = sizeof(Vec4);
+
+	ID3D11Texture2D* tex;
+	C(render->GetDevice()->CreateTexture2D(&t_desc, &t_sub_data, &tex));
+
+	ID3D11ShaderResourceView* tex_view;
+	D3D11_SHADER_RESOURCE_VIEW_DESC tv_desc = { 0 };
+	tv_desc.Format = t_desc.Format;
+	tv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	tv_desc.Texture2D.MipLevels = 1;
+
+	C(render->GetDevice()->CreateShaderResourceView(tex, &tv_desc, &tex_view));
+	
+	tex->Release();
+
+	empty_texture = new Texture;
+	empty_texture->name = "EmptyTexture";
+	empty_texture->tex = tex_view;
+	empty_texture->type = Resource::Texture;
 }
 
 void GuiShader::SetParams()

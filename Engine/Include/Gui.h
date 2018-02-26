@@ -9,8 +9,8 @@ struct Gui : Container
 	~Gui();
 	Font* CreateFont(Cstring name, int size, int weight = 4);
 	void Init();
-	void Draw() override;
-	bool To2dPoint(const Vec3& pos, const Int2& pt);
+	void Draw(const Matrix& mat_view_proj, const Int2& wnd_size);
+	bool To2dPoint(const Vec3& pos, Int2& pt);
 
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size);
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
@@ -19,6 +19,7 @@ struct Gui : Container
 	void DrawRect(const Rect& rect, Color color);
 
 	Font* GetDefaultFont() { return default_font; }
+	const Int2& GetWindowSize() { return wnd_size; }
 
 private:
 	enum ClipResult
@@ -55,4 +56,6 @@ private:
 	VertexPosTexColor* v;
 	uint in_buffer;
 	vector<TextLine> lines;
+	Int2 wnd_size;
+	Matrix mat_view_proj;
 };

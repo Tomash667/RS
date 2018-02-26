@@ -28,7 +28,7 @@ void Scene::Add(SceneNode* node)
 void Scene::Draw()
 {
 	auto& wnd_size = render->GetWindow()->GetSize();
-	mat_view_proj = camera->GetViewMatrix() * Matrix::CreatePerspectiveFieldOfView(PI / 4, float(wnd_size.x) / wnd_size.y, 0.1f, 100.f),
+	mat_view_proj = camera->GetMatrix();
 
 	shader->ResetParams();
 
@@ -77,6 +77,8 @@ void Scene::DrawNodes(vector<SceneNode*>& nodes, SceneNode* parent, Matrix* pare
 void Scene::Init()
 {
 	shader->Init(render);
+	const Int2& wnd_size = render->GetWindow()->GetSize();
+	camera->aspect = float(wnd_size.x) / wnd_size.y;
 }
 
 void Scene::Remove(SceneNode* node)

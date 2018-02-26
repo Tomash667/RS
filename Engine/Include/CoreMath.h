@@ -1035,6 +1035,10 @@ struct Box2d
 	float Bottom() const { return v2.y; }
 	float MidX() const { return (v2.x - v1.x) / 2 + v1.x; }
 	float MidY() const { return (v2.y - v1.y) / 2 + v1.y; }
+
+	// Constants
+	static const Box2d Zero;
+	static const Box2d Unit;
 };
 
 //-----------------------------------------------------------------------------

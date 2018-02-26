@@ -30,8 +30,10 @@ Font* Gui::CreateFont(Cstring name, int size, int weight)
 	return font_loader->Load(name, size, weight * 100);
 }
 
-void Gui::Draw()
+void Gui::Draw(const Matrix& mat_view_proj, const Int2& wnd_size)
 {
+	this->mat_view_proj = mat_view_proj;
+	this->wnd_size = wnd_size;
 	shader->SetParams();
 	Container::Draw();
 	shader->RestoreParams();
@@ -40,7 +42,7 @@ void Gui::Draw()
 void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)
 {
 	Lock();
-	FillQuad(Box2d::Create(pos, size), Box2d(0.f, 0.f, 1.f, 1.f), Color::White);
+	FillQuad(Box2d::Create(pos, size), Box2d::Unit, Color::White);
 	Flush(image);
 }
 
@@ -212,6 +214,14 @@ Gui::ClipResult Gui::Clip(int x, int y, int w, int h, const Rect* clip)
 		return ClipPartial;
 }
 
+void Gui::DrawRect(const Rect& rect, Color color)
+{
+	Box2d pos(rect), tex(0, 0, 1, 1);
+	Lock();
+	FillQuad(Box2d(rect), Box2d::Unit, color);
+	Flush(shader->GetEmptyTexture());
+}
+
 void Gui::Lock()
 {
 	assert(!v);
@@ -270,7 +280,7 @@ void Gui::FillQuad(const Box2d& pos, const Box2d& tex, const Vec4& color)
 bool Gui::To2dPoint(const Vec3& pos, Int2& pt)
 {
 	Vec4 v4;
-	Vec3::Transform(pos, mViewProj, v4);
+	Vec3::Transform(pos, mat_view_proj, v4);
 
 	if(v4.z < 0)
 	{

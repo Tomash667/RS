@@ -10,14 +10,14 @@ struct Camera
 
 	Camera();
 	void Update(float dt);
-	Matrix GetViewMatrix();
+	Matrix GetMatrix();
 	void Reset() { reset = true; }
 
 	Mode mode;
 	SceneNode* target;
 	Vec3 from, to, up;
 	Vec2 rot;
-	float springiness, dist, shift, target_h;
+	float springiness, dist, shift, target_h, fov, aspect, znear, zfar;
 
 private:
 	Vec3 vfrom, vto;

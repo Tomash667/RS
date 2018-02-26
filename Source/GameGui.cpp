@@ -6,6 +6,8 @@
 #include "GroundItem.h"
 #include "Item.h"
 #include <Font.h>
+#include "SceneNode.h"
+
 
 GameGui::GameGui(Game* game) : game(game)
 {
@@ -21,7 +23,7 @@ void GameGui::Draw()
 		item_pos.y += 0.5f;
 
 		Int2 text_pos;
-		if(!gui->To2dPoint(pos, text_pos))
+		if(!gui->To2dPoint(item_pos, text_pos))
 			return;
 
 		cstring name;
@@ -53,7 +55,7 @@ void GameGui::Draw()
 			text_pos.y = wnd_size.y - text_size.y;
 
 		Rect rect = Rect::Create(text_pos, text_size);
-		gui->DrawRect(rect, Color(0, 0, 0, 128));
+		gui->DrawRect(rect, Color(0, 163, 33, 128));
 		gui->DrawText(name, nullptr, Color::Black, Font::Top | Font::Center, rect);
 	}
 }
