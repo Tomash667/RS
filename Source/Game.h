@@ -2,10 +2,6 @@
 
 #include <GameHandler.h>
 
-struct GameGui;
-struct GroundItem;
-struct Player;
-
 //enum GameState
 //{
 //	GS_MAIN_MENU,
@@ -18,7 +14,6 @@ struct Game : GameHandler
 	~Game();
 	int Run();
 	void OnInit() override;
-	void InitGui();
 	void LoadResources();
 	void OnUpdate(float dt) override;
 	void UpdateGame(float dt);
@@ -29,11 +24,5 @@ struct Game : GameHandler
 	Camera* camera;
 	Player* player;
 	vector<GroundItem*> items;
-
-	//====================================
-	// GAME GUI
-	//====================================
-	Label* label_paused;
-	Label* label_fps;
-	Panel* panel_fps;
+	bool paused;
 };

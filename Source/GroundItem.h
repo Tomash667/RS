@@ -6,5 +6,5 @@ struct GroundItem
 {
 	SceneNode* node;
 	Item* item;
-	uint count;
+	uint count, ammo_count;
 };

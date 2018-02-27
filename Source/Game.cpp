@@ -49,6 +49,7 @@ void Game::OnInit()
 {
 	LoadResources();
 	//state = GS_MAIN_MENU;
+	paused = false;
 
 	ResourceManager* res_mgr = engine->GetResourceManager();
 	Scene* scene = engine->GetScene();
@@ -92,11 +93,13 @@ void Game::OnInit()
 
 	engine->GetRender()->SetClearColor(Vec4(0, 0.5f, 1, 1));
 
-	InitGui();
+	game_gui = new GameGui(this);
+	engine->GetGui()->Add(game_gui);
 
 	GroundItem* ground_item = new GroundItem;
 	ground_item->item = Item::Get("gun");
-	ground_item->count = ground_item->item->count;
+	ground_item->count = 1;
+	ground_item->ammo_count = ground_item->item->count;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, 0);
 	ground_item->node->SetMesh(ground_item->item->mesh);
@@ -105,7 +108,8 @@ void Game::OnInit()
 
 	ground_item = new GroundItem;
 	ground_item->item = Item::Get("food");
-	ground_item->count = ground_item->item->count;
+	ground_item->count = 1;
+	ground_item->ammo_count = 0;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, 2);
 	ground_item->node->SetMesh(ground_item->item->mesh);
@@ -115,56 +119,12 @@ void Game::OnInit()
 	ground_item = new GroundItem;
 	ground_item->item = Item::Get("ammo");
 	ground_item->count = ground_item->item->count;
+	ground_item->ammo_count = 0;
 	ground_item->node = new SceneNode();
 	ground_item->node->pos = Vec3(-2.f, 0, -2);
 	ground_item->node->SetMesh(ground_item->item->mesh);
 	items.push_back(ground_item);
 	scene->Add(ground_item->node);
-}
-
-void Game::InitGui()
-{
-	Gui* gui = engine->GetGui();
-	ResourceManager* res_mgr = engine->GetResourceManager();
-	const Int2& wnd_size = engine->GetWindow()->GetSize();
-
-	game_gui = new GameGui(this);
-	gui->Add(game_gui);
-
-	Sprite* sprite = new Sprite;
-	sprite->image = res_mgr->GetTexture("crosshair_dot.png");
-	sprite->size = Int2(16, 16);
-	sprite->pos = (wnd_size - sprite->size) / 2;
-	gui->Add(sprite);
-
-	ProgressBar* hp_bar = new ProgressBar;
-	hp_bar->image_back = res_mgr->GetTexture("bar_empty.png");
-	hp_bar->image_front = res_mgr->GetTexture("hp_bar.png");
-	hp_bar->size = Int2(128, 8);
-	hp_bar->pos = Int2(0, wnd_size.y - hp_bar->size.y);
-	hp_bar->progress = 0.6f;
-	gui->Add(hp_bar);
-
-	label_paused = new Label;
-	label_paused->size = wnd_size;
-	label_paused->flags = Font::Center | Font::VCenter;
-	label_paused->text = "GAME PAUSED\nEsc - continue, Enter - exit to menu";
-	label_paused->visible = false;
-	label_paused->font = gui->CreateFont("Arial", 32, 5);
-	gui->Add(label_paused);
-
-	label_fps = new Label;
-	label_fps->pos = Int2(6, 6);
-	label_fps->color = Color::Black;
-
-	panel_fps = new Panel;
-	panel_fps->Add(label_fps);
-	panel_fps->image = res_mgr->GetTexture("panel.png");
-	panel_fps->image_size = 32;
-	panel_fps->corner_size = 12;
-	panel_fps->size = Int2(32, 32);
-	panel_fps->Setup();
-	gui->Add(panel_fps);
 }
 
 void Game::LoadResources()
@@ -220,10 +180,10 @@ void Game::OnUpdate(float dt)
 	if(input->Down(Key::Alt) && input->Pressed(Key::U))
 		engine->GetWindow()->UnlockCursor(true);
 
-	if(label_paused->visible)
+	if(paused)
 	{
 		if(input->Pressed(Key::Escape))
-			label_paused->visible = false;
+			paused = false;
 		else if(input->Pressed(Key::Enter))
 		{
 			engine->Shutdown();
@@ -233,27 +193,11 @@ void Game::OnUpdate(float dt)
 	else
 	{
 		if(input->Pressed(Key::Escape))
-			label_paused->visible = true;
+			paused = true;
 	}
 
-	if(!label_paused->visible)
+	if(!paused)
 		UpdateGame(dt);
-
-	// update gui
-	if(input->Pressed(Key::F1))
-		panel_fps->visible = !panel_fps->visible;
-	if(panel_fps->visible)
-	{
-		label_fps->text = Format("Fps: %g\nPos: %g, %g\nRot: %g", FLT10(engine->GetFps()), FLT10(player->node->pos.x), FLT10(player->node->pos.z),
-			FLT100(Clip(player->node->rot + PI / 2)));
-		label_fps->CalculateSize();
-		Int2 new_size = Int2::Max(label_fps->size + Int2(12, 12), panel_fps->size);
-		if(new_size != panel_fps->size)
-		{
-			panel_fps->size = new_size;
-			panel_fps->Setup();
-		}
-	}
 }
 
 void Game::UpdateGame(float dt)
@@ -321,6 +265,7 @@ void Game::UpdateGame(float dt)
 
 		if(player->action_state != 2 && inst->GetProgress(0) >= 19.f / 34)
 		{
+			player->AddItem(player->item_before->item, player->item_before->count, player->item_before->ammo_count);
 			engine->GetScene()->Remove(player->item_before->node);
 			DeleteElement(items, player->item_before);
 			player->item_before = nullptr;

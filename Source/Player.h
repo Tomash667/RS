@@ -1,5 +1,14 @@
 #pragma once
 
+struct ItemSlot
+{
+	Item* item;
+	uint count;
+	uint ammo_count;
+
+	ItemSlot(Item* item, uint count, uint ammo_count) : item(item), count(count), ammo_count(ammo_count) {}
+};
+
 struct Player
 {
 	enum class Animation
@@ -35,10 +44,16 @@ struct Player
 	SceneNode* node;
 	float hp, hpmax, food, foodmax;
 	Action action;
-	int action_state;
+	int action_state, weapon_index;
 	Animation anim, new_anim;
 	GroundItem* item_before;
+	vector<ItemSlot> items;
 
-	Player() : hp(60.f), hpmax(100.f), food(33.f), foodmax(100.f), action(Action::NONE), anim(Animation::NONE), new_anim(Animation::STAND),
-		item_before(nullptr) {}
+	Player();
+	float GetHpP() const { return hp / hpmax; }
+	float GetFoodP() const { return food / foodmax; }
+	bool HaveWeapon() const { return weapon_index != -1; }
+	ItemSlot& GetWeapon() { assert(HaveWeapon()); return items[weapon_index]; }
+	uint GetAmmoLeft(Item* item) const;
+	uint AddItem(Item* item, uint count, uint ammo_count);
 };

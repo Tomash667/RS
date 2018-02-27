@@ -57,7 +57,7 @@ void ProgressBar::Draw()
 	assert(image_front && image_back);
 	gui->DrawSprite(image_back, pos, size);
 	if(progress > 0.f)
-		gui->DrawSpritePart(image_front, pos, size, Vec2(progress, 1.f));
+		gui->DrawSpritePart(image_front, pos, size, Vec2(Min(progress, 1.f), 1.f));
 }
 
 
@@ -85,7 +85,10 @@ Panel::Panel() : image(nullptr), image_size(0), corner_size(0), pos_grid(4), uv_
 
 void Panel::Draw()
 {
-	gui->DrawSpriteGrid(image, color, pos_grid, uv_grid);
+	if(corner_size > 0)
+		gui->DrawSpriteGrid(image, color, pos_grid, uv_grid);
+	else
+		gui->DrawRect(image, Rect::Create(pos, size), color);
 	Container::Draw();
 }
 

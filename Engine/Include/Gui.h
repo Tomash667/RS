@@ -16,7 +16,7 @@ struct Gui : Container
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part);
 	void DrawSpriteGrid(Texture* image, Color color, const GridF& pos, const GridF& uv);
 	bool DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect, const Rect* clip = nullptr);
-	void DrawRect(const Rect& rect, Color color);
+	void DrawRect(Texture* image, const Rect& rect, Color color = Color::White);
 
 	Font* GetDefaultFont() { return default_font; }
 	const Int2& GetWindowSize() { return wnd_size; }

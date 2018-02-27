@@ -214,12 +214,12 @@ Gui::ClipResult Gui::Clip(int x, int y, int w, int h, const Rect* clip)
 		return ClipPartial;
 }
 
-void Gui::DrawRect(const Rect& rect, Color color)
+void Gui::DrawRect(Texture* image, const Rect& rect, Color color)
 {
 	Box2d pos(rect), tex(0, 0, 1, 1);
 	Lock();
 	FillQuad(Box2d(rect), Box2d::Unit, color);
-	Flush(shader->GetEmptyTexture());
+	Flush(image ? image : shader->GetEmptyTexture());
 }
 
 void Gui::Lock()
