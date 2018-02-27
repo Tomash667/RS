@@ -32,6 +32,7 @@ struct Sprite : Control
 	void Draw() override;
 
 	Texture* image;
+	Color color;
 };
 
 //-----------------------------------------------------------------------------

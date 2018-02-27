@@ -29,7 +29,7 @@ uint Player::AddItem(Item* item, uint count, uint ammo_count)
 	if(item->IsStackable())
 	{
 		// first try to stack
-		const uint empty_index = items.size();
+		const uint empty_index = (uint)items.size();
 		uint free_index = empty_index, index = 0;
 		for(ItemSlot& slot : items)
 		{

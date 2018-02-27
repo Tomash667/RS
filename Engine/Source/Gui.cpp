@@ -17,8 +17,9 @@ Gui::~Gui()
 	delete shader;
 }
 
-void Gui::Init()
+void Gui::Init(const Int2& wnd_size)
 {
+	this->wnd_size = wnd_size;
 	shader->Init(render);
 	font_loader->Init(render);
 	default_font = CreateFont("Arial", 14);
@@ -39,17 +40,17 @@ void Gui::Draw(const Matrix& mat_view_proj, const Int2& wnd_size)
 	shader->RestoreParams();
 }
 
-void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size)
+void Gui::DrawSprite(Texture* image, const Int2& pos, const Int2& size, Color color)
 {
 	Lock();
-	FillQuad(Box2d::Create(pos, size), Box2d::Unit, Color::White);
+	FillQuad(Box2d::Create(pos, size), Box2d::Unit, color);
 	Flush(image);
 }
 
-void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part)
+void Gui::DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part, Color color)
 {
 	Lock();
-	FillQuad(Box2d::Create(pos, size * part), Box2d(Vec2::Zero, part), Color::White);
+	FillQuad(Box2d::Create(pos, size * part), Box2d(Vec2::Zero, part), color);
 	Flush(image);
 }
 
@@ -92,7 +93,7 @@ void Gui::DrawSpriteGrid(Texture* image, Color color, const GridF& pos, const Gr
 			v->color = current_color;
 			++v;
 
-			++in_buffer;
+			in_buffer += 2;
 		}
 	}
 	Flush(image);
@@ -191,7 +192,7 @@ void Gui::DrawTextLine(Font* font, cstring text, uint line_begin, uint line_end,
 		}
 
 		x += glyph_size.x;
-		if(in_buffer == GuiShader::MaxQuads)
+		if(in_buffer * 3 == GuiShader::MaxVertex)
 			Flush(font->tex, true);
 	}
 }
@@ -222,6 +223,56 @@ void Gui::DrawRect(Texture* image, const Rect& rect, Color color)
 	Flush(image ? image : shader->GetEmptyTexture());
 }
 
+void Gui::DrawSpriteCircle(Texture* image, float start_angle, float dir, float t, const Vec2& center, float r, Color color)
+{
+	assert(image);
+	t = Clamp(t, 0.f, 1.f);
+	if(t == 0.f)
+		return;
+	const int splits = 16;
+	Vec4 current_color = color;
+	Lock();
+	float d = start_angle;
+	float part = PI * 2 * t / splits * (dir >= 0 ? 1.f : -1.f);
+	const Vec2 c(center);
+	for(int i = 0; i < splits; ++i)
+	{
+		float prev_d = d;
+		d += part;
+		float d1, d2;
+		if(dir >= 0)
+		{
+			d1 = d;
+			d2 = prev_d;
+		}
+		else
+		{
+			d1 = prev_d;
+			d2 = d;
+		}
+
+		float sinv = sin(d1), cosv = cos(d1);
+		v->pos = Vec2(c.x + sinv * r, c.y + cosv * r);
+		v->tex = Vec2(0.5f + sinv * 0.5f, 0.5f + cosv * 0.5f);
+		v->color = current_color;
+		++v;
+
+		sinv = sin(d2); cosv = cos(d2);
+		v->pos = Vec2(c.x + sinv * r, c.y + cosv * r);
+		v->tex = Vec2(0.5f + sinv * 0.5f, 0.5f + cosv * 0.5f);
+		v->color = current_color;
+		++v;
+
+		v->pos = c;
+		v->tex = Vec2(0.5f, 0.5f);
+		v->color = current_color;
+		++v;
+
+		++in_buffer;
+	}
+	Flush(image);
+}
+
 void Gui::Lock()
 {
 	assert(!v);
@@ -232,7 +283,7 @@ void Gui::Lock()
 void Gui::Flush(Texture* tex, bool lock)
 {
 	assert(tex && v);
-	shader->Draw(tex, in_buffer * 6);
+	shader->Draw(tex, in_buffer * 3);
 	if(lock)
 	{
 		v = shader->Lock();
@@ -274,7 +325,7 @@ void Gui::FillQuad(const Box2d& pos, const Box2d& tex, const Vec4& color)
 	v->color = color;
 	++v;
 
-	++in_buffer;
+	in_buffer += 2;
 }
 
 bool Gui::To2dPoint(const Vec3& pos, Int2& pt)

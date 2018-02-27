@@ -16,4 +16,7 @@ private:
 	Label* l_ammo, *l_fps, *l_paused;
 	Panel* p_fps;
 	Texture* t_no_weapon;
+
+	float progrez;
+	Texture* circle;
 };

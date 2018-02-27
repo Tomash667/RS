@@ -304,6 +304,11 @@ inline int Lerp(int a, int b, float t)
 {
 	return int(t*(b - a)) + a;
 }
+template<typename T>
+inline T Lerp(T a, T b, float t)
+{
+	return T(t*(b - a)) + a;
+}
 
 // Return shortes direction between angles
 float ShortestArc(float a, float b);

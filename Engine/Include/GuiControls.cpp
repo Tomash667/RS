@@ -36,14 +36,14 @@ void Container::Update(float dt)
 
 
 //=================================================================================================
-Sprite::Sprite() : image(nullptr)
+Sprite::Sprite() : image(nullptr), color(Color::White)
 {
 }
 
 void Sprite::Draw()
 {
 	assert(image);
-	gui->DrawSprite(image, pos, size);
+	gui->DrawSprite(image, pos, size, color);
 }
 
 

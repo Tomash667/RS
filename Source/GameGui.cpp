@@ -15,6 +15,7 @@
 GameGui::GameGui(Game* game) : game(game)
 {
 	assert(game);
+	progrez = 0.f;
 }
 
 void GameGui::Init()
@@ -25,6 +26,13 @@ void GameGui::Init()
 	t_no_weapon = res_mgr->GetTexture("no_weapon.png");
 
 	Sprite* sprite = new Sprite;
+	sprite->image = res_mgr->GetTexture("gui.png");
+	sprite->pos = Int2(0, wnd_size.y - 87);
+	sprite->size = Int2(512, 128);
+	sprite->color = Color(255, 255, 255, 192);
+	Add(sprite);
+
+	sprite = new Sprite;
 	sprite->image = res_mgr->GetTexture("crosshair_dot.png");
 	sprite->size = Int2(16, 16);
 	sprite->pos = (wnd_size - sprite->size) / 2;
@@ -76,6 +84,9 @@ void GameGui::Init()
 	p_fps->size = Int2(32, 32);
 	p_fps->Setup();
 	Add(p_fps);
+
+
+	circle = res_mgr->GetTexture("progress_circle.png");
 }
 
 void GameGui::Draw()
@@ -124,6 +135,29 @@ void GameGui::Draw()
 		gui->DrawRect(nullptr, rect, Color(0, 163, 33, 128));
 		gui->DrawText(name, nullptr, Color::Black, Font::Top | Font::Center, rect);
 	}
+
+	// 7 55 26 26
+	const Int2& wnd_size = gui->GetWindowSize();
+	const Color yellow(255, 255, 0); // todo
+	const Color red(255, 0, 0); // todo
+	Color color;
+	if(progrez >= 0.75f)
+		color = Color::White;
+	else if(progrez >= 0.325f)
+		//color = yellow;
+		color = Color::Lerp(yellow, Color::White, (progrez - 0.325f) / 0.325f);
+	else
+		//color = red;
+		color = Color::Lerp(red, yellow, progrez / 0.325f); // TODO
+	gui->DrawSpriteCircle(circle, -PI / 2, -1.f, progrez, Vec2(7 + 13, wnd_size.y - 87 + 55 + 13), 13.f, color);
+
+	// circles
+	// + food (white->yellow->red)
+	// + energy --||--
+	// + sanity
+	// + virus
+	// + air
+	// + radiation
 }
 
 void GameGui::Update(float dt)
@@ -167,4 +201,6 @@ void GameGui::Update(float dt)
 		spr_current_weapon->image = t_no_weapon;
 		l_ammo->visible = false;
 	}
+
+	progrez = Clip(progrez + dt / 2, 1.25f);
 }

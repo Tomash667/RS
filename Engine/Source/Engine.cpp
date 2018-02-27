@@ -83,7 +83,7 @@ void Engine::Init(StartupOptions& options)
 	scene->Init();
 
 	gui = new Gui(render);
-	gui->Init();
+	gui->Init(window->GetSize());
 
 	Info("Init game.");
 	handler->OnInit();

@@ -95,6 +95,7 @@ void Game::OnInit()
 
 	game_gui = new GameGui(this);
 	engine->GetGui()->Add(game_gui);
+	game_gui->Init();
 
 	GroundItem* ground_item = new GroundItem;
 	ground_item->item = Item::Get("gun");

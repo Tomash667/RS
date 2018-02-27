@@ -20,7 +20,7 @@ struct GuiShader
 	VertexPosTexColor* Lock();
 	Texture* GetEmptyTexture() { return empty_texture; }
 
-	static const uint MaxQuads = 256;
+	static const uint MaxVertex = 256 * 3;
 
 private:
 	Render* render;

@@ -52,7 +52,7 @@ void GuiShader::Init(Render* render)
 	// create vertex buffer
 	D3D11_BUFFER_DESC v_desc;
 	v_desc.Usage = D3D11_USAGE_DYNAMIC;
-	v_desc.ByteWidth = MaxQuads * sizeof(VertexPosTexColor) * 6;
+	v_desc.ByteWidth = MaxVertex * sizeof(VertexPosTexColor);
 	v_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	v_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	v_desc.MiscFlags = 0;
@@ -150,7 +150,7 @@ VertexPosTexColor* GuiShader::Lock()
 
 void GuiShader::Draw(Texture* tex, uint count)
 {
-	assert(tex && locked_data && count <= MaxQuads * 6);
+	assert(tex && locked_data && count <= MaxVertex);
 
 	auto context = render->GetContext();
 	context->Unmap(vb, 0);
