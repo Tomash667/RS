@@ -1,5 +1,6 @@
 #include "Pch.h"
 #include "SoundManager.h"
+#include "Sound.h"
 #include <fmod.hpp>
 
 
@@ -24,8 +25,20 @@ void SoundManager::Init()
 		throw Format("Failed to initialize FMOD system (%d).", result);
 }
 
-void SoundManager::Load()
+Sound* SoundManager::Load(cstring path, bool is_music)
 {
-	cstring path;
-	//system->createStream(path, FMOD_HARDWARE | FMOD_LOWMEM
+	int flags = FMOD_HARDWARE | FMOD_LOWMEM;
+	if(is_music)
+		flags |= FMOD_2D;
+	else
+		flags |= FMOD_3D | FMOD_LOOP_OFF;
+	FMOD::Sound* sound;
+	FMOD_RESULT result = system->createStream(path, flags, nullptr, &sound);
+	if(result != FMOD_OK)
+		throw Format("Failed to load %s '%s' (%d).", is_music ? "music" : "sound", path, result);
+	Sound* snd = new Sound;
+	snd->type = Resource::Sound;
+	snd->sound = sound;
+	snd->is_music = is_music;
+	return snd;
 }

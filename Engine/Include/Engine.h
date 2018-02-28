@@ -17,6 +17,7 @@ struct Engine : WindowHandler
 	Render* GetRender() { return render; }
 	ResourceManager* GetResourceManager() { return res_mgr; }
 	Scene* GetScene() { return scene; }
+	SoundManager* GetSoundManager() { return sound_mgr; }
 	Window* GetWindow() { return window; }
 
 private:

@@ -73,22 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(ProjectDir)Lib\</OutDir>
     <IntDir>Output\$(Configuration)\$(Platform)\</IntDir>
-    <TargetName>Brak_32d</TargetName>
+    <TargetName>Brak_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(ProjectDir)Lib\</OutDir>
     <IntDir>Output\$(Configuration)\$(Platform)\</IntDir>
-    <TargetName>Brak_32</TargetName>
+    <TargetName>Brak</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)Lib\</OutDir>
     <IntDir>Output\$(Configuration)\$(Platform)\</IntDir>
-    <TargetName>Brak_d</TargetName>
+    <TargetName>Brak_64d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(ProjectDir)Lib\</OutDir>
     <IntDir>Output\$(Configuration)\$(Platform)\</IntDir>
-    <TargetName>Brak</TargetName>
+    <TargetName>Brak_64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

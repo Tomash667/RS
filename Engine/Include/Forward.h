@@ -51,5 +51,6 @@ struct ID3D11DepthStencilState;
 // fmod
 namespace FMOD
 {
+	class Sound;
 	class System;
 }

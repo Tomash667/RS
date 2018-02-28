@@ -5,6 +5,8 @@
 #include "Render.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "SoundManager.h"
+#include "Sound.h"
 
 
 static_assert(MAX_PATH == 260, "Invalid max path.");
@@ -16,9 +18,9 @@ Texture::~Texture()
 }
 
 
-ResourceManager::ResourceManager(Render* render) : render(render)
+ResourceManager::ResourceManager(Render* render, SoundManager* sound_mgr) : render(render), sound_mgr(sound_mgr)
 {
-	assert(render);
+	assert(render && sound_mgr);
 	qmsh_loader = new QmshLoader(this, render->GetDevice(), render->GetContext());
 }
 
@@ -68,14 +70,18 @@ Mesh* ResourceManager::GetMesh(Cstring name)
 	return mesh;
 }
 
-Sound* ResourceManager::GetSound(Cstring name)
+Sound* ResourceManager::GetSound(Cstring name, bool is_music)
 {
 	Sound* sound = (Sound*)Get(name, Resource::Sound);
 	if(!sound)
 	{
 		cstring path = Format("data/%s", name);
-		sound_mgr->Load(path);
+		sound = sound_mgr->Load(path, is_music);
+		sound->name = name;
+		resources.insert(sound);
 	}
+	else
+		assert(is_music == sound->is_music);
 	return sound;
 }
 

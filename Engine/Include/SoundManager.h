@@ -5,7 +5,7 @@ struct SoundManager
 	SoundManager();
 	~SoundManager();
 	void Init();
-	void Load();
+	Sound* Load(cstring path, bool is_music);
 
 private:
 	FMOD::System* system;

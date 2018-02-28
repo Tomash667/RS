@@ -8,7 +8,8 @@ struct ResourceManager
 	~ResourceManager();
 	Texture* GetTexture(Cstring name);
 	Mesh* GetMesh(Cstring name);
-	Sound* GetSound(Cstring name);
+	Sound* GetSound(Cstring name, bool is_music = false);
+	Sound* GetMusic(Cstring name) { return GetSound(name, true); }
 
 private:
 	struct ResourceComparer
