@@ -5,7 +5,8 @@ struct Resource
 	enum Type
 	{
 		Texture,
-		Mesh
+		Mesh,
+		Sound
 	};
 
 	virtual ~Resource() {}

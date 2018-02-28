@@ -137,6 +137,12 @@
     <ClInclude Include="Include\GuiControls.h">
       <Filter>Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\SoundManager.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Sound.h">
+      <Filter>Include\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">
@@ -212,6 +218,9 @@
       <Filter>Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Include\GuiControls.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SoundManager.cpp">
       <Filter>Source\Engine</Filter>
     </ClCompile>
   </ItemGroup>

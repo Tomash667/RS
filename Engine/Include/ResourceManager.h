@@ -4,10 +4,11 @@
 
 struct ResourceManager
 {
-	ResourceManager(Render* render);
+	ResourceManager(Render* render, SoundManager* sound_mgr);
 	~ResourceManager();
 	Texture* GetTexture(Cstring name);
 	Mesh* GetMesh(Cstring name);
+	Sound* GetSound(Cstring name);
 
 private:
 	struct ResourceComparer
@@ -24,6 +25,7 @@ private:
 	wchar_t* GetPath(cstring name);
 
 	Render* render;
+	SoundManager* sound_mgr;
 	QmshLoader* qmsh_loader;
 	ResourceContainer resources;
 	Resource res_search;

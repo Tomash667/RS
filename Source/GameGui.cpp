@@ -106,10 +106,10 @@ void GameGui::Draw()
 		cstring name;
 		if(ground_item->item->type == Item::Type::WEAPON)
 		{
-			if(ground_item->count == 0)
+			if(ground_item->ammo_count == 0)
 				name = Format("%s (empty)", ground_item->item->name);
 			else
-				name = Format("%s (%d/%d)", ground_item->item->name, ground_item->count, ground_item->item->count);
+				name = Format("%s (%d/%d)", ground_item->item->name, ground_item->ammo_count, ground_item->item->count);
 		}
 		else
 		{

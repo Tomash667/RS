@@ -68,6 +68,17 @@ Mesh* ResourceManager::GetMesh(Cstring name)
 	return mesh;
 }
 
+Sound* ResourceManager::GetSound(Cstring name)
+{
+	Sound* sound = (Sound*)Get(name, Resource::Sound);
+	if(!sound)
+	{
+		cstring path = Format("data/%s", name);
+		sound_mgr->Load(path);
+	}
+	return sound;
+}
+
 Resource* ResourceManager::Get(cstring name, Resource::Type type)
 {
 	assert(name);

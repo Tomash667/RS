@@ -27,6 +27,7 @@ private:
 	InputManager* input;
 	Window* window;
 	Render* render;
+	SoundManager* sound_mgr;
 	ResourceManager* res_mgr;
 	Scene* scene;
 	Gui* gui;

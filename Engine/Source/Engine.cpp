@@ -4,6 +4,7 @@
 #include "InputManager.h"
 #include "Window.h"
 #include "Render.h"
+#include "SoundManager.h"
 #include "ResourceManager.h"
 #include "Scene.h"
 #include "Gui.h"
@@ -11,8 +12,8 @@
 #include "Camera.h"
 
 
-Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), res_mgr(nullptr), scene(nullptr), gui(nullptr),
-shutdown(false), fps(0)
+Engine::Engine(GameHandler* handler) : handler(handler), input(nullptr), window(nullptr), render(nullptr), sound_mgr(nullptr), res_mgr(nullptr),
+scene(nullptr), gui(nullptr), shutdown(false), fps(0)
 {
 	assert(handler);
 	Logger::global = new Logger("log.txt");
@@ -23,6 +24,7 @@ Engine::~Engine()
 	delete gui;
 	delete scene;
 	delete res_mgr;
+	delete sound_mgr;
 	delete render;
 	delete window;
 	delete input;
@@ -77,7 +79,9 @@ void Engine::Init(StartupOptions& options)
 	render = new Render(window);
 	render->Init();
 
-	res_mgr = new ResourceManager(render);
+	sound_mgr = new SoundManager;
+
+	res_mgr = new ResourceManager(render, sound_mgr);
 
 	scene = new Scene(render);
 	scene->Init();

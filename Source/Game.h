@@ -17,12 +17,11 @@ struct Game : GameHandler
 	void LoadResources();
 	void OnUpdate(float dt) override;
 	void UpdateGame(float dt);
-	void CleanWorld();
 
 	Engine* engine;
 	GameGui* game_gui;
 	Camera* camera;
+	Level* level;
 	Player* player;
-	vector<GroundItem*> items;
 	bool paused;
 };

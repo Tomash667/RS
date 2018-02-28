@@ -13,6 +13,8 @@ struct ResourceManager;
 struct Mesh;
 struct Scene;
 struct SceneNode;
+struct Sound;
+struct SoundManager;
 struct Texture;
 struct Window;
 struct WindowHandler;
@@ -45,3 +47,9 @@ struct ID3D11ShaderResourceView;
 struct ID3D11Buffer;
 struct D3D11_INPUT_ELEMENT_DESC;
 struct ID3D11DepthStencilState;
+
+// fmod
+namespace FMOD
+{
+	class System;
+}
