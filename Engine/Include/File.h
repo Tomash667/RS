@@ -24,9 +24,9 @@ public:
 	~FileReader();
 
 	bool Open(cstring filename);
-	bool Read(void* ptr, uint size);
+	void Read(void* ptr, uint size);
 	void ReadToString(string& s);
-	bool Skip(uint size);
+	void Skip(uint size);
 	uint GetSize() const { return size; }
 	uint GetPos() const;
 
@@ -48,9 +48,9 @@ public:
 	operator bool() const { return IsOk(); }
 
 	template<typename T>
-	bool operator >> (T& a)
+	void operator >> (T& a)
 	{
-		return Read(&a, sizeof(a));
+		Read(&a, sizeof(a));
 	}
 
 	template<typename T>
@@ -62,69 +62,74 @@ public:
 	}
 
 	template<typename T>
-	bool Read(T& a)
+	void Read(T& a)
 	{
-		return Read(&a, sizeof(a));
+		Read(&a, sizeof(a));
 	}
 
 	template<>
-	bool Read(string& s)
+	void Read(string& s)
 	{
-		return ReadString1(s);
+		ReadString1(s);
 	}
 
 	template<typename T, typename T2>
-	bool ReadCasted(T2& a)
+	void ReadCasted(T2& a)
 	{
-		T b;
-		if(!Read<T>(b))
-			return false;
-		a = (T2)b;
-		return true;
+		a = (T2)Read<T>();
 	}
 
-	/*bool ReadStringBUF()
+	template<typename SizeType>
+	const string& ReadString()
 	{
-	byte len = Read<byte>();
-	if(len == 0)
-	{
-	BUF[0] = 0;
-	return true;
+		SizeType len = Read<SizeType>();
+		if(!ok || len == 0)
+			buf.clear();
+		else
+		{
+			buf.resize(len);
+			Read((char*)buf.c_str(), len);
+		}
+		return buf;
 	}
-	else
+
+	const string& ReadString1()
 	{
-	BUF[len] = 0;
-	return Read(BUF, len);
+		return ReadString<byte>();
 	}
-	}*/
 
 	template<typename T>
-	bool Skip()
+	void Skip()
 	{
-		return Skip(sizeof(T));
+		Skip(sizeof(T));
 	}
 
-	bool ReadString1(string& s)
+	template<typename SizeType>
+	void ReadString(string& s)
 	{
-		byte len;
-		if(!Read(len))
-			return false;
-		s.resize(len);
-		return Read((char*)s.c_str(), len);
+		SizeType len = Read<SizeType>();
+		if(!ok || len == 0)
+			s.clear();
+		else
+		{
+			s.resize(len);
+			Read((char*)s.c_str(), len);
+		}
+	}
+
+	void ReadString1(string& s)
+	{
+		ReadString<byte>(s);
 	}
 
 	bool ReadString2(string& s)
 	{
-		word len;
-		if(!Read(len))
-			return false;
-		s.resize(len);
-		return Read((char*)s.c_str(), len);
+		ReadString<word>(s);
 	}
 
-	bool operator >> (string& s)
+	void operator >> (string& s)
 	{
-		return ReadString1(s);
+		ReadString1(s);
 	}
 
 	template<typename T>
@@ -151,6 +156,7 @@ private:
 	FileHandle file;
 	uint size;
 	bool own_handle, ok;
+	static string buf;
 };
 
 //-----------------------------------------------------------------------------

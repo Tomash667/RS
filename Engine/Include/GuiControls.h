@@ -59,6 +59,17 @@ struct Label : Control
 };
 
 //-----------------------------------------------------------------------------
+struct Button : Control
+{
+	Button();
+	void Draw() override;
+
+	string text;
+	Color color;
+	Font* font;
+};
+
+//-----------------------------------------------------------------------------
 struct Panel : Container
 {
 	Panel();

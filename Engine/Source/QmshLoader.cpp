@@ -19,7 +19,8 @@ Mesh* QmshLoader::Load(cstring path)
 	Ptr<Mesh> mesh;
 
 	// load header
-	if(!f.Read(mesh->head))
+	f.Read(mesh->head);
+	if(!f)
 		throw "Failed to read mesh header.";
 	if(memcmp(mesh->head.format, "QMSH", 4) != 0)
 		throw Format("Invalid file signature '%.4s'.", mesh->head.format);

@@ -6,6 +6,7 @@ struct ItemSlot
 	uint count;
 	uint ammo_count;
 
+	ItemSlot() {}
 	ItemSlot(Item* item, uint count, uint ammo_count) : item(item), count(count), ammo_count(ammo_count) {}
 };
 
@@ -67,4 +68,6 @@ struct Player
 	void Update(float dt);
 	bool CanReload() const;
 	void StartReload(int slot = -1);
+	void Save(FileWriter& f);
+	void Load(FileReader& f);
 };

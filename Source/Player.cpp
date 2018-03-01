@@ -253,7 +253,7 @@ void Player::Update(float dt)
 			{
 				if(action_state == 0 && inst->GetProgress(0) >= 0.5f) // todo
 				{
-					if(action_var < items.size() && items[action_var].item)
+					if(action_var < (int)items.size() && items[action_var].item)
 					{
 						ItemSlot& slot = items[action_var];
 						GroundItem* ground_item = new GroundItem;
@@ -304,7 +304,7 @@ void Player::Update(float dt)
 						else
 						{
 							// reload from single slot
-							if(action_var < items.size() && items[action_var].item && items[action_var].item->type == Item::Type::AMMO)
+							if(action_var < (int)items.size() && items[action_var].item && items[action_var].item->type == Item::Type::AMMO)
 							{
 								ItemSlot& slot = items[action_var];
 								uint used = min(slot.count, weapon.item->count - weapon.ammo_count);
@@ -470,4 +470,64 @@ void Player::StartReload(int slot)
 	action_var = slot;
 	node->GetMeshInstance()->Play("reload", PLAY_ONCE, 1);
 	new_anim = Animation::ACTION;
+}
+
+void Player::Save(FileWriter& f)
+{
+	f << node->pos;
+	f << node->rot;
+	f << hp;
+	f << hpmax;
+	f << food;
+	f << foodmax;
+	f << action;
+	f << action_state;
+	f << action_var;
+	f << weapon_index;
+	f << anim;
+	// todo: save mesh instance
+	f << items.size();
+	for(ItemSlot& slot : items)
+	{
+		if(!slot.item)
+			f.Write0();
+		else
+		{
+			f << slot.item->id;
+			f << slot.count;
+			f << slot.ammo_count;
+		}
+	}
+}
+
+void Player::Load(FileReader& f)
+{
+	f >> node->pos;
+	f >> node->rot;
+	f >> hp;
+	f >> hpmax;
+	f >> food;
+	f >> foodmax;
+	f >> action;
+	f >> action_state;
+	f >> action_var;
+	f >> weapon_index;
+	f >> anim;
+	// todo: item before when picking up
+	// todo: load mesh instance
+	uint count;
+	f >> count;
+	items.resize(count);
+	for(ItemSlot& slot : items)
+	{
+		const string& id = f.ReadString1();
+		if(id.empty())
+			slot.item = nullptr;
+		else
+		{
+			slot.item = Item::Get(id);
+			f >> slot.count;
+			f >> slot.ammo_count;
+		}
+	}
 }

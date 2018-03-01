@@ -15,6 +15,5 @@ Item* Item::Get(Cstring id)
 			return &item;
 	}
 
-	assert(0);
-	return &items[0];
+	throw Format("Missing item '%s'.", id);
 }

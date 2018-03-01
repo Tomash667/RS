@@ -19,9 +19,10 @@
 #include "GroundItem.h"
 #include "GameGui.h"
 #include "Level.h"
+#include "MainMenu.h"
 
 
-Game::Game() : engine(nullptr), player(nullptr), level(nullptr), game_gui(nullptr)
+Game::Game() : engine(nullptr), player(nullptr), level(nullptr), main_menu(nullptr), game_gui(nullptr)
 {
 }
 
@@ -58,6 +59,7 @@ void Game::OnInit()
 
 	Mesh* mesh = res_mgr->GetMesh("human.qmsh");
 
+	main_menu = new MainMenu;
 	level = new Level(scene);
 
 	player = new Player(engine->GetInput(), level);

@@ -20,6 +20,7 @@ struct Window;
 struct WindowHandler;
 
 // gui controls
+struct Button;
 struct Container;
 struct Control;
 struct Label;

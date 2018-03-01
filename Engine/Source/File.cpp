@@ -1,6 +1,7 @@
 #include "Pch.h"
 
 static DWORD tmp;
+string FileReader::buf;
 
 
 FileReader::~FileReader()
@@ -31,12 +32,11 @@ bool FileReader::Open(cstring filename)
 	return ok;
 }
 
-bool FileReader::Read(void* ptr, uint size)
+void FileReader::Read(void* ptr, uint size)
 {
 	BOOL result = ReadFile(file, ptr, size, &tmp, nullptr);
 	assert(result != FALSE);
 	ok = (size == tmp);
-	return ok;
 }
 
 void FileReader::ReadToString(string& s)
@@ -48,10 +48,9 @@ void FileReader::ReadToString(string& s)
 	assert(size == tmp);
 }
 
-bool FileReader::Skip(uint bytes)
+void FileReader::Skip(uint bytes)
 {
 	ok = (ok && SetFilePointer(file, bytes, nullptr, FILE_CURRENT) != INVALID_SET_FILE_POINTER);
-	return ok;
 }
 
 uint FileReader::GetPos() const

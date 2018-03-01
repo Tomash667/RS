@@ -19,6 +19,7 @@ struct Game : GameHandler
 	void UpdateGame(float dt);
 
 	Engine* engine;
+	MainMenu* main_menu;
 	GameGui* game_gui;
 	Camera* camera;
 	Level* level;
