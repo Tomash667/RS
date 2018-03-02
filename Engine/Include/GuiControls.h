@@ -1,6 +1,9 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
+typedef delegate<void(int)> GuiEvent;
+
+//-----------------------------------------------------------------------------
 struct Control
 {
 	Control() : pos(Int2::Zero), size(Int2::Zero), visible(true) {}
@@ -67,6 +70,8 @@ struct Button : Control
 	string text;
 	Color color;
 	Font* font;
+	int id;
+	GuiEvent event;
 };
 
 //-----------------------------------------------------------------------------
@@ -80,4 +85,35 @@ struct Panel : Container
 	Color color;
 	int image_size, corner_size;
 	GridF pos_grid, uv_grid;
+};
+
+//-----------------------------------------------------------------------------
+struct DialogBox : Panel
+{
+	enum class Type
+	{
+		Ok,
+		YesNo
+	};
+
+	enum class Id
+	{
+		Ok,
+		Yes,
+		No
+	};
+
+	struct Info
+	{
+		Type type;
+		string text;
+		GuiEvent event;
+		Gui* gui;
+
+		void Show();
+	};
+
+private:
+	string text;
+	GuiEvent event;
 };

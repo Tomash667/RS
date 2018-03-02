@@ -167,6 +167,10 @@ void GameGui::Update(float dt)
 	InputManager* input = game->engine->GetInput();
 	Player* player = game->player;
 
+	// alt f4
+	if(input->Down(Key::Alt) && input->Pressed(Key::F4))
+		HandleExit();
+
 	// fps panel
 	if(input->Pressed(Key::F1))
 		p_fps->visible = !p_fps->visible;
@@ -203,4 +207,21 @@ void GameGui::Update(float dt)
 	}
 
 	progrez = Clip(progrez + dt / 2, 1.25f);
+}
+
+void GameGui::HandleExit()
+{
+	DialogBox* dialog = new DialogBox;
+	dialog->text
+	DialogBox::Info info;
+	info.type = DialogBox::Type::YesNo;
+	info.text = "Are you sure you want to quit?";
+	info.event = DialogBox::Event(this, &GameGui::OnExit);
+	info.Show();
+}
+
+void GameGui::OnExit(int id)
+{
+	if(id == (int)DialogBox::Id::Yes)
+		game->engine->Shutdown();
 }

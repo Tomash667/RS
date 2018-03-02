@@ -11,6 +11,7 @@ struct Gui : Container
 	void Init(const Int2& wnd_size);
 	void Draw(const Matrix& mat_view_proj, const Int2& wnd_size);
 	bool To2dPoint(const Vec3& pos, Int2& pt);
+	void ShowDialog(DialogBox* dialog);
 
 	void DrawSprite(Texture* image, const Int2& pos, const Int2& size, Color color = Color::White);
 	void DrawSpritePart(Texture* image, const Int2& pos, const Int2& size, const Vec2& part, Color color = Color::White);

@@ -156,6 +156,7 @@
     <ClInclude Include="Include\Core.h" />
     <ClInclude Include="Include\CoreMath.h" />
     <ClInclude Include="Include\Engine.h" />
+    <ClInclude Include="Include\FastFunc.h" />
     <ClInclude Include="Include\File.h" />
     <ClInclude Include="Include\Font.h" />
     <ClInclude Include="Include\Forward.h" />

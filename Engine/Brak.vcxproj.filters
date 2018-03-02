@@ -143,6 +143,9 @@
     <ClInclude Include="Include\Sound.h">
       <Filter>Include\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Include\FastFunc.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Pch.cpp">

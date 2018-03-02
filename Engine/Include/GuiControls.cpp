@@ -103,3 +103,39 @@ void Panel::Setup()
 	pos_grid.Set({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
 		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
 }
+
+//=================================================================================================
+void DialogBox::Info::Show()
+{
+	DialogBox* dialog = new DialogBox;
+	dialog->event = event;
+	dialog->text = std::move(text);
+
+	int count;
+	Button* buttons[2];
+	switch(type)
+	{
+	default:
+		assert(0);
+	case Type::Ok:
+		count = 1;
+		buttons[0] = new Button;
+		buttons[0]->text = "OK";
+		buttons[0]->id = (int)Id::Ok;
+		break;
+	case Type::YesNo:
+		count = 2;
+		buttons[0] = new Button;
+		buttons[0]->text = "Yes";
+		buttons[0]->id = (int)Id::Yes;
+		buttons[1]->text = "No";
+		buttons[1]->id = (int)Id::No;
+		break;
+	}
+	for(int i = 0; i < count; ++i)
+	{
+		buttons[0]->event = event;
+	}
+
+	gui->ShowDialog(dialog);
+}

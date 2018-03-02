@@ -1,6 +1,7 @@
 #pragma once
 
 #undef CreateFont
+#undef DialogBox
 #undef DrawText
 #undef GetCharWidth
 #undef RegisterClass

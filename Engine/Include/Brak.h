@@ -20,11 +20,14 @@
 #include <set>
 #include <fstream>
 #include <DirectXMath.h>
+#include "FastFunc.h"
 
 using std::vector;
 using std::string;
 using std::min;
 using std::max;
+template<typename T>
+using delegate = ssvu::FastFunc<T>;
 
 #include "Core.h"
 #include "CoreMath.h"

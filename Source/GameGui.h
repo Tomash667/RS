@@ -8,8 +8,11 @@ struct GameGui : Container
 	void Init();
 	void Draw() override;
 	void Update(float dt) override;
+	void HandleExit();
 
 private:
+	void OnExit(int id);
+
 	Game* game;
 	ProgressBar* hp_bar, *food_bar;
 	Sprite* spr_current_weapon;
