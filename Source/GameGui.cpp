@@ -23,6 +23,21 @@ void GameGui::Init()
 	ResourceManager* res_mgr = game->engine->GetResourceManager();
 	const Int2& wnd_size = gui->GetWindowSize();
 
+	Panel* def_panel = new Panel;
+	def_panel->image = res_mgr->GetTexture("panel.png");
+	def_panel->image_size = 32;
+	def_panel->corner_size = 12;
+	gui->AddTemplate(typeid(Panel), def_panel);
+
+	Button* def_button = new Button;
+	def_button->image[0] = res_mgr->GetTexture("panel.png");
+	def_button->image[1] = res_mgr->GetTexture("panel_hover.png");
+	def_button->image[2] = res_mgr->GetTexture("panel_down.png");
+	def_button->image_size = 32;
+	def_button->corner_size = 12;
+	def_button->font_color = Color::White;
+	gui->AddTemplate(typeid(Button), def_button);
+	
 	t_no_weapon = res_mgr->GetTexture("no_weapon.png");
 
 	Sprite* sprite = new Sprite;
@@ -74,15 +89,11 @@ void GameGui::Init()
 
 	l_fps = new Label;
 	l_fps->pos = Int2(6, 6);
-	l_fps->color = Color::Black;
+	l_fps->color = Color::White;
 
 	p_fps = new Panel;
 	p_fps->Add(l_fps);
-	p_fps->image = res_mgr->GetTexture("panel.png");
-	p_fps->image_size = 32;
-	p_fps->corner_size = 12;
 	p_fps->size = Int2(32, 32);
-	p_fps->Setup();
 	Add(p_fps);
 
 
@@ -181,10 +192,7 @@ void GameGui::Update(float dt)
 		l_fps->CalculateSize();
 		Int2 new_size = Int2::Max(l_fps->size + Int2(12, 12), p_fps->size);
 		if(new_size != p_fps->size)
-		{
 			p_fps->size = new_size;
-			p_fps->Setup();
-		}
 	}
 
 	// paused label
@@ -212,16 +220,13 @@ void GameGui::Update(float dt)
 void GameGui::HandleExit()
 {
 	DialogBox* dialog = new DialogBox;
-	dialog->text
-	DialogBox::Info info;
-	info.type = DialogBox::Type::YesNo;
-	info.text = "Are you sure you want to quit?";
-	info.event = DialogBox::Event(this, &GameGui::OnExit);
-	info.Show();
-}
-
-void GameGui::OnExit(int id)
-{
-	if(id == (int)DialogBox::Id::Yes)
-		game->engine->Shutdown();
+	dialog->text = "Are you sure you want to quit?";
+	dialog->event = [&](int id)
+	{
+		if(id == 0)
+			game->engine->Shutdown();
+	};
+	dialog->AddButton("Exit", 0);
+	dialog->AddButton("Cancel", 1);
+	dialog->Show(gui);
 }

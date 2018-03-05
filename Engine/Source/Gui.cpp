@@ -13,6 +13,7 @@ Gui::Gui(Render* render) : render(render), shader(new GuiShader), font_loader(ne
 
 Gui::~Gui()
 {
+	DeleteElements(template_controls);
 	delete font_loader;
 	delete shader;
 }
@@ -97,6 +98,25 @@ void Gui::DrawSpriteGrid(Texture* image, Color color, const GridF& pos, const Gr
 		}
 	}
 	Flush(image);
+}
+
+void Gui::DrawSpriteGrid(Texture* image, Color color, int image_size, int corner_size, const Int2& pos, const Int2& size)
+{
+	if(corner_size > 0)
+	{
+		assert(image_size > 0
+			&& corner_size > 0
+			&& image_size - corner_size * 2 > 0
+			&& size.x >= corner_size * 2
+			&& size.y >= corner_size * 2);
+		static GridF pos_grid(4), uv_grid(4);
+		uv_grid.Set({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
+		pos_grid.Set({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
+			{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
+		DrawSpriteGrid(image, color, pos_grid, uv_grid);
+	}
+	else
+		DrawRect(image, Rect::Create(pos, size), color);
 }
 
 bool Gui::DrawText(Cstring text, Font* font, Color color, int flags, const Rect& rect, const Rect* clip)
@@ -352,4 +372,26 @@ bool Gui::To2dPoint(const Vec3& pos, Int2& pt)
 	pt.y = -int(v3.y*(wnd_size.y / 2) - (wnd_size.y / 2));
 
 	return true;
+}
+
+void Gui::ShowDialog(DialogBox* dialog)
+{
+	assert(dialog);
+	assert(0); // todo
+}
+
+void Gui::AddTemplate(const type_info& type, Control* control)
+{
+	assert(control);
+	auto index = std::type_index(type);
+	template_controls[index] = control;
+}
+
+Control* Gui::GetTemplate(const type_info& type)
+{
+	auto index = std::type_index(type);
+	auto it = template_controls.find(index);
+	if(it == template_controls.end())
+		return nullptr;
+	return it->second;
 }

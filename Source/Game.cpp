@@ -70,6 +70,11 @@ void Game::OnInit()
 	player->node->rot = PI;
 	scene->Add(player->node);
 
+	SceneNode* human2 = new SceneNode;
+	human2->pos = Vec3(0, 0, -2);
+	human2->SetMesh(res_mgr->GetMesh("human2.qmsh"));
+	scene->Add(human2);
+
 	SceneNode* gun = new SceneNode("gun");
 	gun->SetMesh(res_mgr->GetMesh("m1911.qmsh"));
 	//gun->SetMesh(res_mgr->GetMesh("marker.qmsh"));

@@ -79,63 +79,101 @@ void Label::CalculateSize()
 
 
 //=================================================================================================
-Panel::Panel() : image(nullptr), image_size(0), corner_size(0), pos_grid(4), uv_grid(4), color(Color::White)
+Button::Button() : state(State::Up), id(-1), event(nullptr)
 {
+	Button* def = (Button*)gui->GetTemplate(typeid(Button));
+	if(def)
+	{
+		font = def->font;
+		for(int i = 0; i < 3; ++i)
+			image[i] = def->image[i];
+		font_color = def->font_color;
+		image_color = def->image_color;
+		image_size = def->image_size;
+		corner_size = def->corner_size;
+	}
+	else
+	{
+		font = nullptr;
+		for(int i = 0; i < 3; ++i)
+			image[i] = nullptr;
+		font_color = Color::Black;
+		image_color = Color::White;
+		image_size = 0;
+		corner_size = 0;
+	}
+}
+
+void Button::Draw()
+{
+	gui->DrawSpriteGrid(image[(int)state], image_color, image_size, corner_size, pos, size);
+	gui->DrawText(text, font, font_color, Font::Center | Font::VCenter, Rect::Create(pos, size));
+}
+
+void Button::Update(float dt)
+{
+
+}
+
+
+//=================================================================================================
+Panel::Panel()
+{
+	Panel* def = (Panel*)gui->GetTemplate(typeid(Panel));
+	if(def)
+	{
+		image = def->image;
+		color = def->color;
+		image_size = def->image_size;
+		corner_size = def->corner_size;
+	}
+	else
+	{
+		image = nullptr;
+		color = Color::White;
+		image_size = 0;
+		corner_size = 0;
+	}
 }
 
 void Panel::Draw()
 {
-	if(corner_size > 0)
-		gui->DrawSpriteGrid(image, color, pos_grid, uv_grid);
-	else
-		gui->DrawRect(image, Rect::Create(pos, size), color);
+	gui->DrawSpriteGrid(image, color, image_size, corner_size, pos, size);
 	Container::Draw();
 }
 
-void Panel::Setup()
-{
-	assert(image_size > 0
-		&& corner_size > 0
-		&& image_size - corner_size * 2 > 0
-		&& size.x >= corner_size * 2
-		&& size.y >= corner_size * 2);
-	uv_grid.Set({ 0.f, float(corner_size) / image_size, float(image_size - corner_size) / image_size, 1.f });
-	pos_grid.Set({ pos.x, pos.x + corner_size, pos.x + size.x - corner_size, pos.x + size.x },
-		{ pos.y, pos.y + corner_size, pos.y + size.y - corner_size, pos.y + size.y });
-}
 
 //=================================================================================================
-void DialogBox::Info::Show()
+DialogBox::DialogBox() : event(nullptr)
 {
-	DialogBox* dialog = new DialogBox;
-	dialog->event = event;
-	dialog->text = std::move(text);
+}
 
-	int count;
-	Button* buttons[2];
-	switch(type)
-	{
-	default:
-		assert(0);
-	case Type::Ok:
-		count = 1;
-		buttons[0] = new Button;
-		buttons[0]->text = "OK";
-		buttons[0]->id = (int)Id::Ok;
-		break;
-	case Type::YesNo:
-		count = 2;
-		buttons[0] = new Button;
-		buttons[0]->text = "Yes";
-		buttons[0]->id = (int)Id::Yes;
-		buttons[1]->text = "No";
-		buttons[1]->id = (int)Id::No;
-		break;
-	}
-	for(int i = 0; i < count; ++i)
-	{
-		buttons[0]->event = event;
-	}
+DialogBox::~DialogBox()
+{
+	DeleteElements(buttons);
+}
 
-	gui->ShowDialog(dialog);
+void DialogBox::AddButton(Cstring text, int id)
+{
+	Button* button = new Button;
+	button->text = text;
+	button->id = id;
+	buttons.push_back(button);
+}
+
+void DialogBox::Show(Gui* gui)
+{
+	assert(gui);
+	this->gui = gui;
+	gui->ShowDialog(this);
+}
+
+void DialogBox::Draw()
+{
+
+}
+
+void DialogBox::Update(float dt)
+{
+
 }

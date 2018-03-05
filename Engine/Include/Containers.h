@@ -23,3 +23,11 @@ void DeleteElements(T& c)
 		delete e;
 	c.clear();
 }
+
+template<typename Key, typename Value>
+void DeleteElements(unordered_map<Key, Value>& c)
+{
+	for(auto& e : c)
+		delete e.second;
+	c.clear();
+}

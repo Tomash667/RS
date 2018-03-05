@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <set>
 #include <fstream>
@@ -23,6 +24,7 @@
 #include "FastFunc.h"
 
 using std::vector;
+using std::unordered_map;
 using std::string;
 using std::min;
 using std::max;

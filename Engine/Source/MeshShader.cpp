@@ -135,7 +135,8 @@ void MeshShader::Draw(Mesh* mesh)
 
 	for(auto& sub : mesh->subs)
 	{
-		context->PSSetShaderResources(0, 1, sub.tex ? &sub.tex->tex : nullptr);
+		assert(sub.tex && sub.tex->tex);
+		context->PSSetShaderResources(0, 1, &sub.tex->tex);
 		context->DrawIndexed(sub.tris * 3, sub.first * 3, sub.min_ind);
 	}
 }

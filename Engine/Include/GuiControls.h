@@ -1,9 +1,6 @@
 #pragma once
 
 //-----------------------------------------------------------------------------
-typedef delegate<void(int)> GuiEvent;
-
-//-----------------------------------------------------------------------------
 struct Control
 {
 	Control() : pos(Int2::Zero), size(Int2::Zero), visible(true) {}
@@ -64,14 +61,25 @@ struct Label : Control
 //-----------------------------------------------------------------------------
 struct Button : Control
 {
+	enum class State
+	{
+		Up,
+		Hover,
+		Down
+	};
+	
 	Button();
 	void Draw() override;
+	void Update(float dt) override;
 
 	string text;
-	Color color;
-	Font* font;
+	State state;
 	int id;
-	GuiEvent event;
+	delegate<void(int)> event;
+	Font* font;
+	Texture* image[3];
+	Color font_color, image_color;
+	int image_size, corner_size;
 };
 
 //-----------------------------------------------------------------------------
@@ -79,41 +87,23 @@ struct Panel : Container
 {
 	Panel();
 	void Draw() override;
-	void Setup();
 
 	Texture* image;
 	Color color;
 	int image_size, corner_size;
-	GridF pos_grid, uv_grid;
 };
 
 //-----------------------------------------------------------------------------
-struct DialogBox : Panel
+struct DialogBox : Control
 {
-	enum class Type
-	{
-		Ok,
-		YesNo
-	};
+	DialogBox();
+	~DialogBox();
+	void AddButton(Cstring text, int id);
+	void Show(Gui* gui);
+	void Draw() override;
+	void Update(float dt) override;
 
-	enum class Id
-	{
-		Ok,
-		Yes,
-		No
-	};
-
-	struct Info
-	{
-		Type type;
-		string text;
-		GuiEvent event;
-		Gui* gui;
-
-		void Show();
-	};
-
-private:
 	string text;
-	GuiEvent event;
+	delegate<void(int)> event;
+	vector<Button*> buttons;
 };
